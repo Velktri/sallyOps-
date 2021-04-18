@@ -1,5 +1,6 @@
 // read page data from table
-function readTable() {
+function readTable() 
+{
     let table = document.getElementsByTagName('table')[0]
     let rows = table.getElementsByTagName('tr')
 
@@ -14,7 +15,8 @@ function readTable() {
     return data
 }
 
-function extractRowData(rowData) {
+function extractRowData(rowData) 
+{
     let children = rowData.children
 
     let cart = children[0].children[0].innerHTML
