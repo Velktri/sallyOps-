@@ -7,6 +7,9 @@
         "default_title": "sallyOps+",
         "default_popup": "UI.html"
     },
+    "permissions": [
+        "tabs"
+    ],
     "content_scripts": [
         {
             "matches": ["*://*.mozilla.org/*"],

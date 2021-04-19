@@ -26,3 +26,5 @@ function extractRowData(rowData)
 
     return { cart, route, loc, status }
 }
+
+console.log('hi from Content script')
