@@ -9,8 +9,10 @@ function testLog(tabs)
 document.getElementById("getTableButton").onclick = () => {
 
     // get the tab for station command
-    let queries = browser.tabs.query({ url: "*://*.mozilla.org/*" })
+    let queries = browser.tabs.query({ url: "*://logistics.amazon.com/station/dashboard/stage" })
     queries.then(testLog)
+
+    // "*://*.mozilla.org/*"
     /*queries.then.forEach(query => {
         console.log(query)
         testLog()
