@@ -28,10 +28,24 @@ function extractRowData(rowData)
     return { cart, route, loc /*, status */ }
 }
 
+function clickNextPage() 
+{
+    let nextButton = document.getElementsByClassName("css-1jr2uut")
+
+    nextButton.forEach(but => {
+        console.log(but)
+    });
+    //document.getElementsByClassName("css-1jr2uut")[0].click()
+}
+
+console.log("hello from content script.")
+
 browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
         let data = readTable()
+        console.log(data)
+        clickNextPage()
         return Promise.resolve({ data })
     }
 })
