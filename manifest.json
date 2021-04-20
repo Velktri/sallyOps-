@@ -8,12 +8,14 @@
         "default_popup": "UI.html"
     },
     "permissions": [
-        "tabs"
+        "tabs",
+        "storage"
     ],
     "content_scripts": [
         {
-            "matches": ["*://*.mozilla.org/*"],
-            "js": ["main.js"]
+            "matches": ["https://velktri.github.io/sallyOps-/testing/test5.html"],
+            "js": ["main.js"],
+            "all_frames": true
         }
     ]
 }
