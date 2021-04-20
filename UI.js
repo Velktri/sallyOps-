@@ -18,17 +18,9 @@ function getTableData(tabs)
 document.getElementById("getTableButton").onclick = () => {
 
     // get the tab for station command
-    let queries = browser.tabs.query({ url: "https://velktri.github.io/sallyOps-/testing/test5.html" /*"*://*.mozilla.org/*"*/ })
+    let queries = browser.tabs.query({ url: "https://velktri.github.io/sallyOps-/testing/test5.html" /* *://logistics.amazon.com/station/dashboard/stage", "*://*.mozilla.org/*"*/ })
     let tableData = queries.then(getTableData)
 
     // store data
     console.log(tableData)
-    /*queries.then.forEach(query => {
-        console.log(query)
-        testLog()
-    })*/
-        //.then(testLog)
-        //.catch()
-    // get the table data
-    
 }
