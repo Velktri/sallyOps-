@@ -1,31 +1,58 @@
-let data = []
+function onError(error)
+{
+    console.error(`Error: ${error}`)
+}
+
+function storeCartData(cartData)
+{
+    browser.storage.local.set({ carts: cartData })
+}
 
 function getTableData(tabs)
 {
     tabs.forEach(tab => {
         console.log(tab)
         browser.tabs.sendMessage(tab.id, { command: "SO_getTableData" }).then(response => {
-            console.log(response.data)
             if (response.data.length > 0)
             {
-                data = response.data
+                storeCartData(response.data)
             }
-        })
+        }).catch(onError)
     })
-
-    return data
 }
 
+
+
+
+
+// Button Behavior
 document.getElementById("getTableButton").onclick = () => {
-
-    // get the tab for station command
-    let queries = browser.tabs.query({ url: "*://logistics.amazon.com/station/dashboard/stage" /*"https://velktri.github.io/sallyOps-/testing/test5.html"  "*://logistics.amazon.com/station/dashboard/stage", "*://*.mozilla.org/*"*/ })
-    let tableData = queries.then(getTableData)
-
-    // store data
-    console.log(tableData)
+    let queries = browser.tabs.query({
+        url: ["*://logistics.amazon.com/station/dashboard/stage",
+              "https://velktri.github.io/sallyOps-/testing/*"
+        ]
+    })
+    queries.then(getTableData).catch(onError)
 }
 
 document.getElementById("print").onclick = () => {
-    console.log(data)
+    let carts = browser.storage.local.get('carts')
+    carts.then((response) => {
+        if (response.carts != undefined && response.carts.length > 0)
+        {
+            console.log(response.carts[0])
+        }
+        else
+        {
+            console.log('No Carts')
+        }
+    })
+}
+
+document.getElementById("clear").onclick = () => {
+    browser.storage.local.clear()
+}
+
+document.getElementById("cartUI").onclick = () => {
+    
 }

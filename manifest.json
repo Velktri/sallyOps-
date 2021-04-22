@@ -13,7 +13,7 @@
     ],
     "content_scripts": [
         {
-            "matches": ["https://velktri.github.io/sallyOps-/testing/test5.html", "*://*.amazon.dev/*"],
+            "matches": ["https://velktri.github.io/sallyOps-/testing/*.html", "*://*.amazon.dev/*"],
             "js": ["content.js"],
             "all_frames": true
         }
