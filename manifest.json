@@ -3,6 +3,9 @@
     "name": "sallyOps+",
     "version": "1.0",
     "description": "",
+    "background": {
+        "scripts": ["background.js"]
+    },
     "browser_action": {
         "default_title": "sallyOps+",
         "default_popup": "UI.html"
@@ -11,6 +14,7 @@
         "tabs",
         "storage"
     ],
+    "content_security_policy": "script-src 'self'; object-src 'self'",
     "content_scripts": [
         {
             "matches": ["https://velktri.github.io/sallyOps-/testing/*.html", "*://*.amazon.dev/*"],

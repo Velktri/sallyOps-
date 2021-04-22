@@ -11,7 +11,6 @@ function storeCartData(cartData)
 function getTableData(tabs)
 {
     tabs.forEach(tab => {
-        console.log(tab)
         browser.tabs.sendMessage(tab.id, { command: "SO_getTableData" }).then(response => {
             if (response.data.length > 0)
             {
@@ -53,6 +52,29 @@ document.getElementById("clear").onclick = () => {
     browser.storage.local.clear()
 }
 
+/* Creates the command tab and updates the tab id in storage */
 document.getElementById("cartUI").onclick = () => {
-    
+    browser.storage.local.get('SO_UI').then(res => {
+        if (res.SO_UI === undefined || res.SO_UI === browser.tabs.TAB_ID_NONE)
+        {
+            browser.tabs.create({ url: "SO_command.html" }).then((tab) => {
+                browser.storage.local.set({ SO_UI: tab.id })
+            })
+        }
+        else
+        {
+            console.log('hello')
+            browser.storage.local.get("SO_UI").then((res) => {
+                console.log(res.SO_UI)
+                browser.tabs.update(res.SO_UI, { active: true })
+            })
+        }
+    })
+}
+
+document.getElementById("windowData").onclick = () => {
+    let windowData = browser.storage.local.get("SO_UI")
+    windowData.then((response) => {
+        console.log(response.SO_UI)
+    })
 }
