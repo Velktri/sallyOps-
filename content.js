@@ -4,14 +4,23 @@ function readTable()
     let table = document.getElementsByTagName('table')[0]
     let rows = table.getElementsByTagName('tr')
 
-    let data = []
+    let data = {}
     for (i = 2; i < rows.length; i++) 
     {
-        data.push(extractRowData(rows[i]))
+        let rowData = extractRowData(rows[i])
+
+        if (rowData.route in data)
+        {
+            data[rowData.route].carts.push(rowData.carts)
+        }
+        else
+        {
+            let temp = {}
+            temp[rowData.route] = { loc: rowData.loc, carts: [rowData.carts] }
+            data = {...data, ...temp}
+        }
     }
 
-    // sort data
-    // consider building a dictionary for routes
     // ignore parsing waves after depart time or when wave is checked as completed
 
     return data
@@ -33,7 +42,7 @@ function extractRowData(rowData)
 
     let dwellTime = children[5].children[0].innerHTML
 
-    return { cart, route, loc, status, dwellTime }
+    return { route, loc, 'carts': { cart, status, dwellTime }}
 }
 
 function clickNextPage() 
