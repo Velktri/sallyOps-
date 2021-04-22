@@ -12,10 +12,7 @@ function getTableData(tabs)
 {
     tabs.forEach(tab => {
         browser.tabs.sendMessage(tab.id, { command: "SO_getTableData" }).then(response => {
-            if (response.data.length > 0)
-            {
-                storeCartData(response.data)
-            }
+            storeCartData(response.data)
         }).catch(onError)
     })
 }
@@ -37,9 +34,9 @@ document.getElementById("getTableButton").onclick = () => {
 document.getElementById("print").onclick = () => {
     let carts = browser.storage.local.get('carts')
     carts.then((response) => {
-        if (response.carts != undefined && response.carts.length > 0)
+        if (response.carts != undefined)
         {
-            console.log(response.carts[0])
+            console.log(response.carts)
         }
         else
         {

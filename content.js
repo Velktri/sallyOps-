@@ -61,7 +61,6 @@ browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
         let data = readTable()
-        console.log(data)
         //clickNextPage()
         return Promise.resolve({ data })
     }

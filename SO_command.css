@@ -31,3 +31,24 @@
     border: 1px solid #ccc;
     border-top: none;
 }
+
+ul {
+    list-style-type: none;
+    margin: 0px;
+}
+
+.routeContents {
+    padding: 5px;
+}
+
+.outerShell {
+    border: 2px solid black;
+    border-radius: 5px;
+    margin: 15px 0px;
+    width: 30%;
+}
+
+.routeTitle {
+    border-bottom: 2px solid black;
+    padding: 5px;
+}
