@@ -45,6 +45,18 @@ function extractRowData(rowData)
     return { route, loc, 'carts': { cart, status, dwellTime }}
 }
 
+function isFirstPage()
+{
+    let pageBtn = document.getElementsByClassName("css-1jr2uut")
+    console.log(pageBtn[0])
+    console.log(pageBtn[0].aria-label.slice(6, 10))
+
+    if (pageBtn.length === 1 && pageBtn[0].aria-label.slice(6, 10) === "next")
+    {
+
+    }
+}
+
 function clickNextPage() 
 {
     let nextButton = document.getElementsByClassName("css-1jr2uut")
@@ -61,6 +73,7 @@ browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
         let data = readTable()
+        isFirstPage()
         //clickNextPage()
         return Promise.resolve({ data })
     }
