@@ -59,18 +59,22 @@ function getNextButton()
     return null
 }
 
-function clickNextPage()
+function clickNextPage(data)
 {
     let nextButton = getNextButton()
 
     console.log(nextButton)
-    /* .click()
-    while nextButton !== null
+    while (nextButton !== null)
+    {
+        nextButton.click()
+        console.log('clicked next page')
+        data = { ...data, ...readTable() }
+        // Obj merge  data and readTable()
+        nextButton = getNextButton()
+    }
 
     // consider adding a delay
-
-    readTable()
-    nextButton = getNextButton()*/
+    return data
 }
 
 console.log("Content script is loaded.")
@@ -79,7 +83,7 @@ browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
         let data = readTable()
-        clickNextPage()
+        data = clickNextPage(data)
         return Promise.resolve({ data })
     }
 })
