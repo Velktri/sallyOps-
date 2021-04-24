@@ -1,19 +1,5 @@
 let activeWaveTab = 1
 
-function list(elements, classInfo)
-{
-    let ul = document.createElement('ul');
-
-    elements.forEach(ele => {
-        let li = document.createElement('li')
-        li.innerHTML = ele.cart
-        li.className = classInfo
-        ul.appendChild(li)
-    })
-
-    return ul
-}
-
 function selectWave()
 {
     let waveBody = document.getElementById("waveData")
@@ -28,40 +14,100 @@ function selectWave()
     this.className += " active"
 }
 
-function generateBody(routeData)
+
+function list(elements)
 {
-    let routeKeys = Object.keys(routeData)
-    routeKeys.sort((x, y) => {
-        x = parseInt(routeData[x].loc.split('.')[1].slice(1))
-        y = parseInt(routeData[y].loc.split('.')[1].slice(1))
+    let ul = document.createElement('ul');
 
-        if (x > y) { return 1 }
-        if (x < y) { return -1 }
-
-        return 0
+    elements.forEach(ele => {
+        let li = document.createElement('li')
+        li.innerHTML = ele.cart
+        li.className = "cartList"
+        ul.appendChild(li)
     })
 
+    return ul
+}
+
+function buildRouteContainer(data, key)
+{
+    let outerShell = document.createElement('div')
+    outerShell.className = 'outerShell'
+
+    let title = document.createElement('div')
+    title.className = 'routeTitle'
+
+    let contents = document.createElement('div')
+    contents.className = 'routeContents'
+
+    outerShell.appendChild(title)
+    outerShell.appendChild(contents)
+
+    if (key !== undefined || data !== undefined)
+    {
+        title.innerHTML = key + ' ' + data[key].loc
+        contents.appendChild(list(data[key].carts))
+    }
+    else
+    {
+        title.innerHTML = "Empty Sally Row"
+    }
+
+
+    return outerShell
+}
+
+function generateBody(routeData)
+{
+    let sortedRoutes = [...Array(20)]
+    let duplicateSallyPorts = []
+    Object.keys(routeData).forEach(key => {
+        let sallyIndex = parseInt(routeData[key].loc.split('.')[1].slice(1))
+        if (sortedRoutes[sallyIndex - 1] === undefined)
+        {
+            sortedRoutes[sallyIndex - 1] = key
+        }
+        else
+        {
+            duplicateSallyPorts.push(key)
+        }
+    });
 
 
     let routesHTML = document.createElement('div')
-    routeKeys.forEach(routeKey => {
-        let outerShell = document.createElement('div')
-        outerShell.className = 'outerShell'
+    routesHTML.className = "flex-container"
+    let leftSallys = document.createElement('div')
+    leftSallys.className = "sallyColumn flex-container"
+    let RightSallys = document.createElement('div')
+    RightSallys.className = "sallyColumn flex-container"
 
-        let title = document.createElement('div')
-        title.className = 'routeTitle'
+    routesHTML.appendChild(leftSallys)
+    routesHTML.appendChild(RightSallys)
 
-        let contents = document.createElement('div')
-        contents.className = 'routeContents'
 
-        outerShell.appendChild(title)
-        outerShell.appendChild(contents)
-
-        title.innerHTML = routeKey + ' ' + routeData[routeKey].loc
-
-        contents.appendChild(list(routeData[routeKey].carts))
-
-        routesHTML.appendChild(outerShell)
+    sortedRoutes.forEach((routeKey, index) => {
+        if (index < 10)
+        {
+            if (routeKey !== undefined)
+            {
+                leftSallys.appendChild(buildRouteContainer(routeData, routeKey))
+            }
+            else
+            {
+                leftSallys.appendChild(buildRouteContainer())
+            }
+        }
+        else 
+        {
+            if (routeKey !== undefined)
+            {
+                RightSallys.appendChild(buildRouteContainer(routeData, routeKey))
+            }
+            else
+            {
+                RightSallys.appendChild(buildRouteContainer())
+            }
+        }
     });
 
     return routesHTML
@@ -86,8 +132,4 @@ window.onload = () => {
     browser.storage.local.get('SO_UI').then(res => {
         console.log(res.SO_UI)
     })
-}
-
-window.onunload = () => {
-    browser.storage.local.set({ SO_UI: browser.tabs.TAB_ID_NONE })
 }

@@ -45,26 +45,32 @@ function extractRowData(rowData)
     return { route, loc, 'carts': { cart, status, dwellTime }}
 }
 
-function isFirstPage()
+function getNextButton()
 {
     let pageBtn = document.getElementsByClassName("css-1jr2uut")
-    console.log(pageBtn[0])
-    console.log(pageBtn[0].aria-label.slice(6, 10))
 
-    if (pageBtn.length === 1 && pageBtn[0].aria-label.slice(6, 10) === "next")
-    {
-
+    for (let i = 0; i < pageBtn.length; i++) {
+        if (pageBtn[i].getAttribute("aria-label").slice(6, 10) === "next")
+        {
+            return pageBtn[i]
+        }
     }
+
+    return null
 }
 
-function clickNextPage() 
+function clickNextPage()
 {
-    let nextButton = document.getElementsByClassName("css-1jr2uut")
+    let nextButton = getNextButton()
 
-    nextButton.forEach(but => {
-        console.log(but)
-    });
-    //document.getElementsByClassName("css-1jr2uut")[0].click()
+    console.log(nextButton)
+    /* .click()
+    while nextButton !== null
+
+    // consider adding a delay
+
+    readTable()
+    nextButton = getNextButton()*/
 }
 
 console.log("Content script is loaded.")
@@ -73,8 +79,7 @@ browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
         let data = readTable()
-        isFirstPage()
-        //clickNextPage()
+        clickNextPage()
         return Promise.resolve({ data })
     }
 })

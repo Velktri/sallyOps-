@@ -1,3 +1,30 @@
+/*
+#413c69 : violet
+#4a47a3 : dark blue
+#709fb0 : teal
+#a7c5eb : light blue
+*/
+
+/*
+91F9E5 : Magic Mint
+76F7BF : Aquamarine
+5FDD9D : Medium Aquamarine
+499167 : Middle Green
+3F4531 : Rifle Green
+*/
+
+
+body {
+    margin: 0px
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .tab {
     overflow: hidden;
     border: 1px solid #ccc;
@@ -39,16 +66,21 @@ ul {
 
 .routeContents {
     padding: 5px;
+    height: 100px;
 }
 
 .outerShell {
     border: 2px solid black;
     border-radius: 5px;
-    margin: 15px 0px;
-    width: 30%;
+    margin: 15px 2%;
+    width: 90%;
 }
 
 .routeTitle {
     border-bottom: 2px solid black;
     padding: 5px;
+}
+
+.sallyColumn {
+    width: 50%;
 }

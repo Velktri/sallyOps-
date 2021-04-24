@@ -23,17 +23,15 @@ function getTableData(tabs)
 
 // Button Behavior
 document.getElementById("getTableButton").onclick = () => {
-    let queries = browser.tabs.query({
+    browser.tabs.query({
         url: ["*://logistics.amazon.com/station/dashboard/stage",
               "https://velktri.github.io/sallyOps-/testing/*"
         ]
-    })
-    queries.then(getTableData).catch(onError)
+    }).then(getTableData).catch(onError)
 }
 
 document.getElementById("print").onclick = () => {
-    let carts = browser.storage.local.get('carts')
-    carts.then((response) => {
+    browser.storage.local.get('carts').then((response) => {
         if (response.carts != undefined)
         {
             console.log(response.carts)
@@ -70,8 +68,7 @@ document.getElementById("cartUI").onclick = () => {
 }
 
 document.getElementById("windowData").onclick = () => {
-    let windowData = browser.storage.local.get("SO_UI")
-    windowData.then((response) => {
+    browser.storage.local.get("SO_UI").then((response) => {
         console.log(response.SO_UI)
     })
 }
