@@ -5,6 +5,8 @@ function readTable()
     let rows = table.getElementsByTagName('tr')
 
     let data = {}
+    let stgTime = {}
+
     for (i = 2; i < rows.length; i++) 
     {
         let rowData = extractRowData(rows[i])
@@ -33,6 +35,7 @@ function extractRowData(rowData)
     let cart = children[0].children[0].innerHTML
     let route = children[1].children[0].textContent
     let loc = children[3].children[0].innerHTML
+    let stageTime = children[2].children[0].innerHTML
 
     let status = children[4].children[0].textContent.trim()
     if (status.slice(0, 3) === "Not")
@@ -42,7 +45,7 @@ function extractRowData(rowData)
 
     let dwellTime = children[5].children[0].innerHTML
 
-    return { route, loc, 'carts': { cart, status, dwellTime }}
+    return { route, loc, stageTime, 'carts': { cart, status, dwellTime }}
 }
 
 function getNextButton()
