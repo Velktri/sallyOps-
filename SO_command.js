@@ -1,18 +1,34 @@
-let activeWaveTab = 1
+let activeWaveTab = 0
 let sortedStageTimes = []
 
 function selectWave()
 {
-    let waveBody = document.getElementById("waveData")
-    waveBody.innerHTML = "wave " + this.id
-    activeWaveTab = parseInt(this.id, 10)
+    browser.storage.local.get('carts').then((res) => {
+        let tablinks = document.getElementsByClassName("tablinks")
+        for (var i = 0; i < tablinks.length; i++)
+        {
+            if (tablinks[i].id === this.id)
+            {
+                activeWaveTab = i
+            }
+        }
 
-    tablinks = document.getElementsByClassName("tablinks")
-    for (var i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "")
-    }
+        let waveBody = document.getElementById("waveData")
+        while (waveBody.firstChild) 
+        {
+            waveBody.removeChild(waveBody.firstChild);
+        }
 
-    this.className += " active"
+        waveBody.appendChild(generateBody(res.carts[sortedStageTimes[activeWaveTab]]))
+        activeWaveTab = parseInt(this.id, 10)
+
+        for (var i = 0; i < tablinks.length; i++)
+        {
+            tablinks[i].className = tablinks[i].className.replace(" active", "")
+        }
+
+        this.className += " active"
+    })
 }
 
 
@@ -80,8 +96,6 @@ function generateBody(routeData)
         }
     });
 
-    console.log(sortedRoutes)
-
 
     let routesHTML = document.createElement('div')
     routesHTML.className = "flex-container"
@@ -125,30 +139,36 @@ function generateBody(routeData)
 window.onload = () => {
     browser.storage.local.get('carts').then((res) => {
         let cartData = res.carts
+
         sortedStageTimes = Object.keys(cartData).sort((x, y) => {
-            let xTime = parseInt(x.split(':'))
-            let yTime = parseInt(y.split(':'))
+            let xTime = x.split(':')
+            let yTime = y.split(':')
+
+            let xHour = parseInt(xTime[0])
+            let yHour = parseInt(yTime[0])
 
             // hours
-            if (xTime[0] < yTime[0])
+            if (xHour < yHour)
             {
                 return -1
             }
-
-            if (xTime[0] > yTime[0])
+            else if (xHour > yHour)
             {
                 return 1
             }
 
             // mintues
-            if (xTime[0] === yTime[0])
+            if (xHour === yHour)
             {
-                if (xTime[1] < yTime[1])
+                let xMinute = parseInt(xTime[1])
+                let yMinute = parseInt(yTime[1])
+
+                if (xMinute < yMinute)
                 {
                     return -1
                 }
     
-                if (xTime[1] > yTime[1])
+                if (xMinute > yMinute)
                 {
                     return 1
                 }
@@ -169,7 +189,7 @@ window.onload = () => {
         })
 
         let waveBody = document.getElementById("waveData")
-        waveBody.appendChild(generateBody(cartData["07:20"]))
+        waveBody.appendChild(generateBody(cartData[sortedStageTimes[activeWaveTab]]))
     })
 
     browser.storage.local.get('SO_UI').then(res => {

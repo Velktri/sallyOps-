@@ -1,14 +1,13 @@
+let waveData = {}
 // read page data from table
 function readTable() 
 {
     let table = document.getElementsByTagName('table')[0]
     let rows = table.getElementsByTagName('tr')
 
-    let waveData = {}
     for (i = 2; i < rows.length; i++)
     {
         let rowData = extractRowData(rows[i])
-
         if (waveData[rowData.stageTime] === undefined)
         {
             waveData[rowData.stageTime] = []
@@ -50,7 +49,7 @@ function readTable()
 
     // ignore parsing waves after depart time or when wave is checked as completed
 
-    return waveData
+    //return waveData
 }
 
 function extractRowData(rowData)
@@ -69,7 +68,6 @@ function extractRowData(rowData)
     }
 
     let dwellTime = children[5].children[0].innerHTML
-
     return { route, loc, stageTime, 'carts': { cart, status, dwellTime }}
 }
 
@@ -87,20 +85,15 @@ function getNextButton()
     return null
 }
 
-function clickNextPage(data)
+function clickNextPage()
 {
     let nextButton = getNextButton()
-
-    console.log(nextButton)
     while (nextButton !== null)
     {
         nextButton.click()
-        console.log('clicked next page')
-        data = { ...data, ...readTable() }
+        readTable()
         nextButton = getNextButton()
     }
-
-    return data
 }
 
 console.log("Content script is loaded.")
@@ -108,9 +101,8 @@ console.log("Content script is loaded.")
 browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
-        let data = readTable()
-        //data = clickNextPage(data)
-
-        return Promise.resolve({ data })
+        readTable()
+        clickNextPage()
+        return Promise.resolve({ data: waveData })
     }
 })
