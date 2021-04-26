@@ -4,28 +4,53 @@ function readTable()
     let table = document.getElementsByTagName('table')[0]
     let rows = table.getElementsByTagName('tr')
 
-    let data = {}
-    let stgTime = {}
-
-    for (i = 2; i < rows.length; i++) 
+    let waveData = {}
+    for (i = 2; i < rows.length; i++)
     {
         let rowData = extractRowData(rows[i])
 
-        if (rowData.route in data)
+        if (waveData[rowData.stageTime] === undefined)
         {
-            data[rowData.route].carts.push(rowData.carts)
+            waveData[rowData.stageTime] = []
+        }
+
+        let waveRoutes = waveData[rowData.stageTime]
+
+        let found = false
+        waveRoutes.forEach(waveRoute => {
+            if (waveRoute[rowData.route] !== undefined)
+            {
+                waveRoute[rowData.route].carts.push(rowData.carts)
+                found = true
+            }
+        })
+
+        if (!found)
+        {
+            let temp = {}
+            temp[rowData.route] = { loc: rowData.loc, carts: [rowData.carts] }
+            //waveRoutes = { ...waveRoutes, ...temp }
+            waveData[rowData.stageTime].push(temp)
+        }
+
+
+        /*if (rowData.route in waveRoutes)
+        {
+            waveRoutes[rowData.route].carts.push(rowData.carts)
         }
         else
         {
             let temp = {}
             temp[rowData.route] = { loc: rowData.loc, carts: [rowData.carts] }
-            data = {...data, ...temp}
-        }
+            waveRoutes = { ...waveRoutes, ...temp }
+        }*/
+
+        
     }
 
     // ignore parsing waves after depart time or when wave is checked as completed
 
-    return data
+    return waveData
 }
 
 function extractRowData(rowData)
@@ -72,11 +97,9 @@ function clickNextPage(data)
         nextButton.click()
         console.log('clicked next page')
         data = { ...data, ...readTable() }
-        // Obj merge  data and readTable()
         nextButton = getNextButton()
     }
 
-    // consider adding a delay
     return data
 }
 
@@ -86,7 +109,8 @@ browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
         let data = readTable()
-        data = clickNextPage(data)
+        //data = clickNextPage(data)
+
         return Promise.resolve({ data })
     }
 })
