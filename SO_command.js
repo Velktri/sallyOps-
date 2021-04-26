@@ -181,6 +181,11 @@ window.onload = () => {
         sortedStageTimes.forEach((wave, i) => {
             let tabBtn = document.createElement('button')
             tabBtn.className = 'tablinks'
+            if (i === activeWaveTab)
+            {
+                tabBtn.className += ' active'
+            }
+
             tabBtn.id = `${ wave }`
             tabBtn.innerHTML = 'Wave ' + `${i + 1}`
             tabBtn.onclick = selectWave

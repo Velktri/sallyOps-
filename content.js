@@ -28,28 +28,11 @@ function readTable()
         {
             let temp = {}
             temp[rowData.route] = { loc: rowData.loc, carts: [rowData.carts] }
-            //waveRoutes = { ...waveRoutes, ...temp }
             waveData[rowData.stageTime].push(temp)
         }
-
-
-        /*if (rowData.route in waveRoutes)
-        {
-            waveRoutes[rowData.route].carts.push(rowData.carts)
-        }
-        else
-        {
-            let temp = {}
-            temp[rowData.route] = { loc: rowData.loc, carts: [rowData.carts] }
-            waveRoutes = { ...waveRoutes, ...temp }
-        }*/
-
-        
     }
 
     // ignore parsing waves after depart time or when wave is checked as completed
-
-    //return waveData
 }
 
 function extractRowData(rowData)
@@ -85,6 +68,30 @@ function getNextButton()
     return null
 }
 
+function getPrevButton()
+{
+    let pageBtn = document.getElementsByClassName("css-1jr2uut")
+
+    for (let i = 0; i < pageBtn.length; i++) {
+        if (pageBtn[i].getAttribute("aria-label").slice(6, 10) === "prev")
+        {
+            return pageBtn[i]
+        }
+    }
+
+    return null
+}
+
+function resetToFirstPage()
+{
+    let prevBtn = getPrevButton()
+    while(prevBtn !== null)
+    {
+        prevBtn.click()
+        prevBtn = getPrevButton()
+    }
+}
+
 function clickNextPage()
 {
     let nextButton = getNextButton()
@@ -101,8 +108,12 @@ console.log("Content script is loaded.")
 browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
+        resetToFirstPage()
         readTable()
         clickNextPage()
-        return Promise.resolve({ data: waveData })
+
+        let data = waveData
+        waveData = {}
+        return Promise.resolve({ data })
     }
 })
