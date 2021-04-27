@@ -13,13 +13,15 @@ function selectWave()
             }
         }
 
-        let waveBody = document.getElementById("waveData")
-        while (waveBody.firstChild) 
+        let leftSally = document.getElementById("left-sally")
+        let rightSally = document.getElementById("right-sally")
+        while (leftSally.firstChild && rightSally.firstChild) 
         {
-            waveBody.removeChild(waveBody.firstChild);
+            leftSally.removeChild(leftSally.firstChild);
+            rightSally.removeChild(rightSally.firstChild);
         }
 
-        waveBody.appendChild(generateBody(res.carts[sortedStageTimes[activeWaveTab]]))
+        generateBody(res.carts[sortedStageTimes[activeWaveTab]])
         activeWaveTab = parseInt(this.id, 10)
 
         for (var i = 0; i < tablinks.length; i++)
@@ -77,7 +79,7 @@ function buildRouteContainer(sallyInfo)
     {
         routeTitle.innerHTML = sallyInfo.route
         sallyLoc.innerHTML = sallyInfo.loc
-        selectionBtn.innerHTML = 'f'
+        selectionBtn.innerHTML = 'BTN'
         contents.appendChild(list(sallyInfo.carts))
     }
     else
@@ -111,19 +113,11 @@ function generateBody(routeData)
         {
             duplicateSallyPorts.push(sallyInfo)
         }
-    });
+    })
 
 
-    let routesHTML = document.createElement('div')
-    routesHTML.className = "flex-container"
-    let leftSallys = document.createElement('div')
-    leftSallys.className = "sallyColumn flex-container"
-    let RightSallys = document.createElement('div')
-    RightSallys.className = "sallyColumn flex-container"
-
-    routesHTML.appendChild(leftSallys)
-    routesHTML.appendChild(RightSallys)
-
+    let leftSallys = document.getElementById('left-sally')
+    let RightSallys = document.getElementById('right-sally')
 
     sortedRoutes.forEach((sallyInfo, index) => {
         if (index < 10)
@@ -148,9 +142,7 @@ function generateBody(routeData)
                 RightSallys.appendChild(buildRouteContainer())
             }
         }
-    });
-
-    return routesHTML
+    })
 }
 
 window.onload = () => {
@@ -210,8 +202,7 @@ window.onload = () => {
             tabList.appendChild(tabBtn)
         })
 
-        let waveBody = document.getElementById("waveData")
-        waveBody.appendChild(generateBody(cartData[sortedStageTimes[activeWaveTab]]))
+        generateBody(cartData[sortedStageTimes[activeWaveTab]])
     })
 
     browser.storage.local.get('SO_UI').then(res => {
@@ -219,12 +210,22 @@ window.onload = () => {
     })
 }
 
+function getCartInput()
+{
+    let cartVal = document.getElementById("cart-scanner")
+    console.log(cartVal.value)
+    cartVal.value = ""
+    cartVal.blur()
+}
+
 document.addEventListener("keypress", (e) => {
     if (e.target.tagName !== "INPUT")
     {
-        var input = document.getElementById("cart-scanner");
-        input.focus();
-        input.value = e.key;
-        e.preventDefault();
+        var input = document.getElementById("cart-scanner")
+        input.focus()
+        input.value = e.key
+        e.preventDefault()
+
+        setTimeout(getCartInput, 200)
     }
 });
