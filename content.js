@@ -108,9 +108,9 @@ console.log("Content script is loaded.")
 browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
-        resetToFirstPage()
+        //resetToFirstPage()
         readTable()
-        clickNextPage()
+        //clickNextPage()
 
         let data = waveData
         waveData = {}

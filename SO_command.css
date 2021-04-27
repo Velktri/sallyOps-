@@ -15,7 +15,8 @@
 
 
 body {
-    margin: 0px
+    margin: auto;
+    max-width: 1200px;
 }
 
 .flex-container {
@@ -27,12 +28,13 @@ body {
 
 .tab {
     overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
+    border-bottom: 5px solid #76F7BF;
+    background-color: #499167;
 }
 
 .tab button {
     background-color: inherit;
+    border-radius: 10px 10px 0px 0px;
     float: left;
     border: none;
     outline: none;
@@ -43,20 +45,28 @@ body {
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-    background-color: #ddd;
+    background-color: #91F9E5;
 }
 
 /* Create an active/current tablink class */
 .tab button.active {
-    background-color: #ccc;
+    background-color: #76F7BF;
 }
+
+.overview {
+    height: 200px;
+    background-color: lightseagreen;
+    border-bottom: 1px solid black;
+}
+
+
+
 
 /* Style the tab content */
 .tabcontent {
-    /*display: none;*/
     padding: 6px 12px;
-    border: 1px solid #ccc;
     border-top: none;
+    background-color: #3F4531; /* violet*/
 }
 
 ul {
@@ -67,6 +77,8 @@ ul {
 .routeContents {
     padding: 5px;
     height: 100px;
+    background-color: #499167; /* teal */
+    border-radius: 0px 0px 5px 5px;
 }
 
 .outerShell {
@@ -76,11 +88,36 @@ ul {
     width: 90%;
 }
 
-.routeTitle {
+.routeTitleContainer {
     border-bottom: 2px solid black;
     padding: 5px;
+    border-radius: 5px 5px 0px 0px;
+    background-color: #76F7BF; /* light blue */
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.routeTitle {
+    margin: auto;
+
+}
+
+.sallyLocation {
+    padding-left: 10px;
+    min-width: 20%;
+    max-width: 20%;
+}
+
+.sallySelection {
+    padding-right: 10px;
+    min-width: 20%;
+    max-width: 20%;
 }
 
 .sallyColumn {
     width: 50%;
+}
+
+.overview {
+    padding: 20px;
 }

@@ -52,7 +52,20 @@ function buildRouteContainer(sallyInfo)
     outerShell.className = 'outerShell'
 
     let title = document.createElement('div')
-    title.className = 'routeTitle'
+    title.className = 'routeTitleContainer flex-container'
+
+    let sallyLoc = document.createElement('div')
+    sallyLoc.className = 'sallyLocation'
+    title.appendChild(sallyLoc)
+
+    let routeTitle = document.createElement('div')
+    routeTitle.className = 'routeTitle'
+    title.appendChild(routeTitle)
+
+    let selectionBtn = document.createElement('div')
+    selectionBtn.className = 'sallySelection'
+    title.appendChild(selectionBtn)
+
 
     let contents = document.createElement('div')
     contents.className = 'routeContents'
@@ -62,12 +75,14 @@ function buildRouteContainer(sallyInfo)
 
     if (sallyInfo !== undefined)
     {
-        title.innerHTML = sallyInfo.route + ' ' + sallyInfo.loc
+        routeTitle.innerHTML = sallyInfo.route
+        sallyLoc.innerHTML = sallyInfo.loc
+        selectionBtn.innerHTML = 'f'
         contents.appendChild(list(sallyInfo.carts))
     }
     else
     {
-        title.innerHTML = "Empty Sally Row"
+        routeTitle.innerHTML = "Empty Sally Row"
     }
 
 
@@ -78,6 +93,8 @@ function generateBody(routeData)
 {
     let sortedRoutes = [...Array(20)]
     let duplicateSallyPorts = []
+
+    document.getElementById('routeAmount').innerHTML = Object.keys(routeData).length
 
     routeData.forEach(route => {
         let routeID = Object.keys(route)[0]
@@ -201,3 +218,13 @@ window.onload = () => {
         console.log(res.SO_UI)
     })
 }
+
+document.addEventListener("keypress", (e) => {
+    if (e.target.tagName !== "INPUT")
+    {
+        var input = document.getElementById("cart-scanner");
+        input.focus();
+        input.value = e.key;
+        e.preventDefault();
+    }
+});
