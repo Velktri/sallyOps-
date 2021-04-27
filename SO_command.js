@@ -22,8 +22,14 @@ function selectWave()
         }
 
         generateBody(res.carts[sortedStageTimes[activeWaveTab]])
-        activeWaveTab = parseInt(this.id, 10)
+        activeWaveTab = parseInt(this.id)
+        document.getElementById("stage-by-time").innerHTML = this.id
 
+        let departClock = this.id.split(':')
+        /*departClock[1] += 30
+        if (departClock[1])
+        document.getElementById("depart-time").innerHTML = parseInt(this.id) + 30
+*/
         for (var i = 0; i < tablinks.length; i++)
         {
             tablinks[i].className = tablinks[i].className.replace(" active", "")
