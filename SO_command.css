@@ -16,7 +16,7 @@
 
 body {
     margin: auto;
-    max-width: 1200px;
+    /*max-width: 1200px;*/
 }
 
 .flex-container {
@@ -120,4 +120,11 @@ ul {
 
 .overview {
     padding: 20px;
+}
+
+.scanner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
 }

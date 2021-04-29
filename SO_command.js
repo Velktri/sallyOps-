@@ -210,16 +210,12 @@ window.onload = () => {
 
         generateBody(cartData[sortedStageTimes[activeWaveTab]])
     })
-
-    browser.storage.local.get('SO_UI').then(res => {
-        console.log(res.SO_UI)
-    })
 }
 
 function getCartInput()
 {
     let cartVal = document.getElementById("cart-scanner")
-    console.log(cartVal.value)
+    document.getElementById("scanned-cart").innerHTML = cartVal.value
     cartVal.value = ""
     cartVal.blur()
 }
@@ -228,10 +224,9 @@ document.addEventListener("keypress", (e) => {
     if (e.target.tagName !== "INPUT")
     {
         var input = document.getElementById("cart-scanner")
-        input.focus()
+        input.select()
         input.value = e.key
         e.preventDefault()
-
         setTimeout(getCartInput, 200)
     }
-});
+})

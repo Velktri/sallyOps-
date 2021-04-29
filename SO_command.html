@@ -12,7 +12,10 @@
         </div>
         <div id="tabList" class="tab"></div>
         <div id="waveOverview" class="overview">
-            Scanner Input: <input type="text" id="cart-scanner" name="cart-scanner"><br><br>
+            <div>
+                Scanner Input: <span id="scanned-cart"></span>
+            </div>
+
             <div>
                 Routes: <span id="routeAmount">0</span>
             </div>
@@ -22,6 +25,7 @@
             <div>
                 Stage Time: <span id="stage-by-time">0</span>
             </div>
+
         </div>
 
         <div class="tabcontent" id="waveData">
@@ -31,6 +35,7 @@
             </div>
         </div>
 
+        <input type="text" id="cart-scanner" class="scanner" name="cart-scanner">
         <script src="SO_command.js"></script>
     </body>
 </html>
