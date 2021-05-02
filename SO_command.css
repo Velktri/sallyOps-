@@ -16,6 +16,7 @@
 
 body {
     margin: auto;
+    max-width: 1920px;
     /*max-width: 1200px;*/
 }
 
@@ -28,6 +29,7 @@ body {
 
 .tab {
     overflow: hidden;
+    height: 30px;
     border-bottom: 5px solid #76F7BF;
     background-color: #499167;
 }
@@ -39,7 +41,8 @@ body {
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 14px 16px;
+    height: 30px;
+    padding: 5px 15px;
     transition: 0.1s;
 }
 
@@ -54,12 +57,11 @@ body {
 }
 
 .overview {
-    height: 200px;
+    height: 120px;
     background-color: lightseagreen;
     border-bottom: 1px solid black;
+    padding: 20px;
 }
-
-
 
 
 /* Style the tab content */
@@ -115,16 +117,12 @@ ul {
 }
 
 .sallyColumn {
-    width: 50%;
-}
-
-.overview {
-    padding: 20px;
+    width: 25%;
 }
 
 .scanner {
     position: fixed;
-    bottom: 0;
-    left: 0;
+    top: 0;
+    right: 0;
     z-index: -1;
 }

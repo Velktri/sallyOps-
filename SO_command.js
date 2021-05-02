@@ -1,160 +1,13 @@
 let activeWaveTab = 0
 let sortedStageTimes = []
+let cartData = {}
+let sortedRoutes = [...Array(20)]
+let duplicateSallyPorts = []
 
-function selectWave()
+function processCartData()
 {
-    browser.storage.local.get('carts').then((res) => {
-        let tablinks = document.getElementsByClassName("tablinks")
-        for (var i = 0; i < tablinks.length; i++)
-        {
-            if (tablinks[i].id === this.id)
-            {
-                activeWaveTab = i
-            }
-        }
-
-        let leftSally = document.getElementById("left-sally")
-        let rightSally = document.getElementById("right-sally")
-        while (leftSally.firstChild && rightSally.firstChild) 
-        {
-            leftSally.removeChild(leftSally.firstChild);
-            rightSally.removeChild(rightSally.firstChild);
-        }
-
-        generateBody(res.carts[sortedStageTimes[activeWaveTab]])
-        activeWaveTab = parseInt(this.id)
-        document.getElementById("stage-by-time").innerHTML = this.id
-
-        let departClock = this.id.split(':')
-        /*departClock[1] += 30
-        if (departClock[1])
-        document.getElementById("depart-time").innerHTML = parseInt(this.id) + 30
-*/
-        for (var i = 0; i < tablinks.length; i++)
-        {
-            tablinks[i].className = tablinks[i].className.replace(" active", "")
-        }
-
-        this.className += " active"
-    })
-}
-
-
-function list(elements)
-{
-    let ul = document.createElement('ul');
-
-    elements.forEach(ele => {
-        let li = document.createElement('li')
-        li.innerHTML = ele.cart
-        li.className = "cartList"
-        ul.appendChild(li)
-    })
-
-    return ul
-}
-
-function buildRouteContainer(sallyInfo)
-{
-    let outerShell = document.createElement('div')
-    outerShell.className = 'outerShell'
-
-    let title = document.createElement('div')
-    title.className = 'routeTitleContainer flex-container'
-
-    let sallyLoc = document.createElement('div')
-    sallyLoc.className = 'sallyLocation'
-    title.appendChild(sallyLoc)
-
-    let routeTitle = document.createElement('div')
-    routeTitle.className = 'routeTitle'
-    title.appendChild(routeTitle)
-
-    let selectionBtn = document.createElement('div')
-    selectionBtn.className = 'sallySelection'
-    title.appendChild(selectionBtn)
-
-
-    let contents = document.createElement('div')
-    contents.className = 'routeContents'
-
-    outerShell.appendChild(title)
-    outerShell.appendChild(contents)
-
-    if (sallyInfo !== undefined)
-    {
-        routeTitle.innerHTML = sallyInfo.route
-        sallyLoc.innerHTML = sallyInfo.loc
-        selectionBtn.innerHTML = 'BTN'
-        contents.appendChild(list(sallyInfo.carts))
-    }
-    else
-    {
-        routeTitle.innerHTML = "Empty Sally Row"
-    }
-
-
-    return outerShell
-}
-
-function generateBody(routeData)
-{
-    let sortedRoutes = [...Array(20)]
-    let duplicateSallyPorts = []
-
-    document.getElementById('routeAmount').innerHTML = Object.keys(routeData).length
-
-    routeData.forEach(route => {
-        let routeID = Object.keys(route)[0]
-        let routeObj = route[routeID]
-
-        let sallyIndex = parseInt(routeObj.loc.split('.')[1].slice(1))
-        let sallyInfo = { route: routeID, loc: routeObj.loc, carts: routeObj.carts }
-
-        if (sortedRoutes[sallyIndex - 1] === undefined)
-        {
-            sortedRoutes[sallyIndex - 1] = sallyInfo
-        }
-        else
-        {
-            duplicateSallyPorts.push(sallyInfo)
-        }
-    })
-
-
-    let leftSallys = document.getElementById('left-sally')
-    let RightSallys = document.getElementById('right-sally')
-
-    sortedRoutes.forEach((sallyInfo, index) => {
-        if (index < 10)
-        {
-            if (sallyInfo !== undefined)
-            {
-                leftSallys.appendChild(buildRouteContainer(sallyInfo))
-            }
-            else
-            {
-                leftSallys.appendChild(buildRouteContainer())
-            }
-        }
-        else 
-        {
-            if (sallyInfo !== undefined)
-            {
-                RightSallys.appendChild(buildRouteContainer(sallyInfo))
-            }
-            else
-            {
-                RightSallys.appendChild(buildRouteContainer())
-            }
-        }
-    })
-}
-
-window.onload = () => {
-    browser.storage.local.get('carts').then((res) => {
-        let cartData = res.carts
-
+    return browser.storage.local.get('carts').then((res) => {
+        cartData = res.carts
         sortedStageTimes = Object.keys(cartData).sort((x, y) => {
             let xTime = x.split(':')
             let yTime = y.split(':')
@@ -182,7 +35,7 @@ window.onload = () => {
                 {
                     return -1
                 }
-    
+
                 if (xMinute > yMinute)
                 {
                     return 1
@@ -192,6 +45,166 @@ window.onload = () => {
             return 0
         })
 
+        cartData[sortedStageTimes[activeWaveTab]].forEach(route => {
+            let routeID = Object.keys(route)[0]
+            let routeObj = route[routeID]
+    
+            let sallyIndex = parseInt(routeObj.loc.split('.')[1].slice(1))
+            let sallyInfo = { route: routeID, loc: routeObj.loc, carts: routeObj.carts }
+    
+            if (sortedRoutes[sallyIndex - 1] === undefined)
+            {
+                sortedRoutes[sallyIndex - 1] = sallyInfo
+            }
+            else
+            {
+                duplicateSallyPorts.push(sallyInfo)
+            }
+        })
+
+        return Promise.resolve('Carts are processed.')
+    })
+}
+
+function injectCartData()
+{
+    document.getElementById('routeAmount').innerHTML = Object.keys(routeData).length
+
+    /*if (sallyInfo !== undefined)
+    {
+        routeTitle.innerHTML = sallyInfo.route
+        sallyLoc.innerHTML = sallyInfo.loc
+        selectionBtn.innerHTML = 'BTN'
+        contents.appendChild(list(sallyInfo.carts))
+    }*/
+}
+
+function selectWave()
+{
+    browser.storage.local.get('carts').then((res) => {
+        let tablinks = document.getElementsByClassName("tablinks")
+        for (var i = 0; i < tablinks.length; i++)
+        {
+            if (tablinks[i].id === this.id)
+            {
+                activeWaveTab = i
+            }
+        }
+
+
+        let leftSally = document.getElementById("left-sally")
+        let rightSally = document.getElementById("right-sally")
+        while (leftSally.firstChild && rightSally.firstChild) 
+        {
+            leftSally.removeChild(leftSally.firstChild);
+            rightSally.removeChild(rightSally.firstChild);
+        }
+
+        generateBody(res.carts[sortedStageTimes[activeWaveTab]])
+        activeWaveTab = parseInt(this.id)
+
+        let clock = this.id.split(':')
+        document.getElementById("stage-by-time").innerHTML = parseInt(clock[0]) + ':' + clock[1]
+
+        let departClock = this.id.split(':')
+        departClock[1] = parseInt(departClock[1]) + 30
+        if (departClock[1] >= 60)
+        {
+            document.getElementById("depart-time").innerHTML = (parseInt(departClock[0]) + 1) + ':' + (parseInt(departClock[1]) - 60)
+        }
+        else
+        {
+            document.getElementById("depart-time").innerHTML = parseInt(departClock[0]) + ':' + departClock[1]
+        }
+
+
+        for (var i = 0; i < tablinks.length; i++)
+        {
+            tablinks[i].className = tablinks[i].className.replace(" active", "")
+        }
+
+        this.className += " active"
+    })
+}
+
+
+function list(elements)
+{
+    let ul = document.createElement('ul');
+
+    elements.forEach(ele => {
+        let li = document.createElement('li')
+        li.innerHTML = ele.cart
+        li.className = "cartList"
+        ul.appendChild(li)
+    })
+
+    return ul
+}
+
+function buildRouteContainer(index)
+{
+    let outerShell = document.createElement('div')
+    outerShell.id = 'sallyRow' + index
+    outerShell.className = 'outerShell'
+
+    let title = document.createElement('div')
+    title.className = 'routeTitleContainer flex-container'
+
+    let sallyLoc = document.createElement('div')
+    sallyLoc.className = 'sallyLocation'
+    title.appendChild(sallyLoc)
+
+    let routeTitle = document.createElement('div')
+    routeTitle.className = 'routeTitle'
+    title.appendChild(routeTitle)
+    routeTitle.innerHTML = "Empty Sally Row"
+
+    let selectionBtn = document.createElement('div')
+    selectionBtn.className = 'sallySelection'
+    title.appendChild(selectionBtn)
+
+
+    let contents = document.createElement('div')
+    contents.className = 'routeContents'
+
+    outerShell.appendChild(title)
+    outerShell.appendChild(contents)
+
+
+    return outerShell
+}
+
+function generateBody()
+{
+    let col1 = document.getElementById('sally-1-5')
+    let col2 = document.getElementById('sally-6-10')
+    let col3 = document.getElementById('sally-11-15')
+    let col4 = document.getElementById('sally-16-20')
+
+    for (let i = 0; i < 20; i++)
+    {
+        if (i < 5)
+        {
+            col1.appendChild(buildRouteContainer(i))
+        }
+        else if (i < 10)
+        {
+            col2.appendChild(buildRouteContainer(i))
+        }
+        else if (i < 15)
+        {
+            col3.appendChild(buildRouteContainer(i))
+        }
+        else
+        {
+            col4.appendChild(buildRouteContainer(i))
+        }
+    }
+}
+
+window.onload = () => {
+    processCartData().then(res => {
         let tabList = document.getElementById('tabList')
         sortedStageTimes.forEach((wave, i) => {
             let tabBtn = document.createElement('button')
@@ -200,15 +213,15 @@ window.onload = () => {
             {
                 tabBtn.className += ' active'
             }
-
+    
             tabBtn.id = `${ wave }`
             tabBtn.innerHTML = 'Wave ' + `${i + 1}`
             tabBtn.onclick = selectWave
-
+    
             tabList.appendChild(tabBtn)
         })
-
-        generateBody(cartData[sortedStageTimes[activeWaveTab]])
+    
+        generateBody()
     })
 }
 
