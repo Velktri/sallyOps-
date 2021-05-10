@@ -57,10 +57,10 @@ body {
 }
 
 .overview {
-    height: 120px;
+    height: 80px;
     background-color: lightseagreen;
     border-bottom: 1px solid black;
-    padding: 20px;
+    padding: 10px 20px;
 }
 
 

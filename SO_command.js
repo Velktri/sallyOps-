@@ -45,7 +45,7 @@ function processCartData()
             return 0
         })
 
-        cartData[sortedStageTimes[activeWaveTab]].forEach(route => {
+        /*cartData[sortedStageTimes[activeWaveTab]].forEach(route => {
             let routeID = Object.keys(route)[0]
             let routeObj = route[routeID]
     
@@ -60,7 +60,7 @@ function processCartData()
             {
                 duplicateSallyPorts.push(sallyInfo)
             }
-        })
+        })*/
 
         return Promise.resolve('Carts are processed.')
     })
@@ -68,7 +68,26 @@ function processCartData()
 
 function injectCartData()
 {
-    document.getElementById('routeAmount').innerHTML = Object.keys(routeData).length
+    let waveData = cartData[sortedStageTimes[activeWaveTab]]
+    document.getElementById('routeAmount').innerHTML = waveData.length
+
+    cartData[sortedStageTimes[activeWaveTab]].forEach(sallyRow => {
+        if (sallyRow !== undefined)
+        {
+            let routeID = Object.keys(sallyRow)[0]
+            let routeObj = sallyRow[routeID]
+    
+            //let sallyIndex = parseInt(routeObj.loc.split('.')[1].slice(1))
+            //let sallyInfo = { route: routeID, loc: routeObj.loc, carts: routeObj.carts }
+            let sallyLoc = routeObj.loc.split('.')
+            if (sallyLoc[0] === 'STG')
+            {
+                console.log(sallyLoc[1].slice(1))
+                let sallyHtmlContainer = document.getElementById('sallyRow_' + sallyLoc[1].slice(1))
+                sallyHtmlContainer.childNodes[0].childNodes[1].innerHTML = routeID
+            }
+        }
+    })
 
     /*if (sallyInfo !== undefined)
     {
@@ -145,7 +164,7 @@ function list(elements)
 function buildRouteContainer(index)
 {
     let outerShell = document.createElement('div')
-    outerShell.id = 'sallyRow' + index
+    outerShell.id = 'sallyRow_' + (index + 1)
     outerShell.className = 'outerShell'
 
     let title = document.createElement('div')
@@ -222,6 +241,7 @@ window.onload = () => {
         })
     
         generateBody()
+        injectCartData()
     })
 }
 

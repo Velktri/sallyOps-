@@ -56,10 +56,10 @@ function extractRowData(rowData)
 
 function getNextButton()
 {
-    let pageBtn = document.getElementsByClassName("css-1jr2uut")
+    let pageBtn = document.getElementsByClassName("css-d38mm5")
 
     for (let i = 0; i < pageBtn.length; i++) {
-        if (pageBtn[i].getAttribute("aria-label").slice(6, 10) === "next")
+        if (pageBtn[i].childNodes[0].childNodes[0].getAttribute("aria-label").slice(6, 10) === "next")
         {
             return pageBtn[i]
         }
@@ -70,10 +70,10 @@ function getNextButton()
 
 function getPrevButton()
 {
-    let pageBtn = document.getElementsByClassName("css-1jr2uut")
+    let pageBtn = document.getElementsByClassName("css-d38mm5")
 
     for (let i = 0; i < pageBtn.length; i++) {
-        if (pageBtn[i].getAttribute("aria-label").slice(6, 10) === "prev")
+        if (pageBtn[i].childNodes[0].childNodes[0].getAttribute("aria-label").slice(6, 10) === "prev")
         {
             return pageBtn[i]
         }
