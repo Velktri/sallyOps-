@@ -86,13 +86,13 @@ ul {
 .outerShell {
     border: 2px solid black;
     border-radius: 5px;
-    margin: 15px 2%;
+    margin: 10px 2%;
     width: 90%;
 }
 
 .routeTitleContainer {
     border-bottom: 2px solid black;
-    padding: 5px;
+    padding: 5px 0px;
     border-radius: 5px 5px 0px 0px;
     background-color: #76F7BF; /* light blue */
     font-weight: 700;
@@ -101,7 +101,6 @@ ul {
 
 .routeTitle {
     margin: auto;
-
 }
 
 .sallyLocation {

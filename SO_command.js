@@ -71,7 +71,17 @@ function injectCartData()
     let waveData = cartData[sortedStageTimes[activeWaveTab]]
     document.getElementById('routeAmount').innerHTML = waveData.length
 
-    cartData[sortedStageTimes[activeWaveTab]].forEach(sallyRow => {
+    for (let i = 1; i <= 20; i++) {
+        let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
+        let sallyRow = waveData.find(potentialRow => {
+            let sallyLoc = potentialRow[Object.keys(potentialRow)[0]].loc.split('.')
+            if (sallyLoc[0] === 'STG')
+            {
+                return parseInt(sallyLoc[1].slice(1)) === i
+            }
+            return false
+        })
+
         if (sallyRow !== undefined)
         {
             let routeID = Object.keys(sallyRow)[0]
@@ -79,15 +89,20 @@ function injectCartData()
     
             //let sallyIndex = parseInt(routeObj.loc.split('.')[1].slice(1))
             //let sallyInfo = { route: routeID, loc: routeObj.loc, carts: routeObj.carts }
-            let sallyLoc = routeObj.loc.split('.')
-            if (sallyLoc[0] === 'STG')
-            {
-                console.log(sallyLoc[1].slice(1))
-                let sallyHtmlContainer = document.getElementById('sallyRow_' + sallyLoc[1].slice(1))
-                sallyHtmlContainer.childNodes[0].childNodes[1].innerHTML = routeID
-            }
+
+            sallyHtmlContainer.childNodes[0].childNodes[1].innerHTML = routeID
+            sallyHtmlContainer.childNodes[0].childNodes[0].innerHTML = routeObj.loc.split('.')[1]
+            sallyHtmlContainer.childNodes[1].appendChild(list(routeObj.carts))
         }
-    })
+        else
+        {
+            sallyHtmlContainer.childNodes[0].childNodes[1].innerHTML = 'Empty'
+            sallyHtmlContainer.childNodes[0].childNodes[0].innerHTML = ''
+            //sallyHtmlContainer.childNodes[1].removeChild(sallyHtmlContainer.childNodes[0])
+        }
+    }
+
+
 
     /*if (sallyInfo !== undefined)
     {
@@ -100,50 +115,47 @@ function injectCartData()
 
 function selectWave()
 {
-    browser.storage.local.get('carts').then((res) => {
-        let tablinks = document.getElementsByClassName("tablinks")
-        for (var i = 0; i < tablinks.length; i++)
+    let tablinks = document.getElementsByClassName("tablinks")
+    for (var i = 0; i < tablinks.length; i++)
+    {
+        if (tablinks[i].id === this.id)
         {
-            if (tablinks[i].id === this.id)
-            {
-                activeWaveTab = i
-            }
+            activeWaveTab = i
         }
+    }
+
+    /*let leftSally = document.getElementById("left-sally")
+    let rightSally = document.getElementById("right-sally")
+    while (leftSally.firstChild && rightSally.firstChild) 
+    {
+        leftSally.removeChild(leftSally.firstChild);
+        rightSally.removeChild(rightSally.firstChild);
+    }
+
+    generateBody(res.carts[sortedStageTimes[activeWaveTab]])
+
+    let clock = this.id.split(':')
+    document.getElementById("stage-by-time").innerHTML = parseInt(clock[0]) + ':' + clock[1]
+
+    let departClock = this.id.split(':')
+    departClock[1] = parseInt(departClock[1]) + 30
+    if (departClock[1] >= 60)
+    {
+        document.getElementById("depart-time").innerHTML = (parseInt(departClock[0]) + 1) + ':' + (parseInt(departClock[1]) - 60)
+    }
+    else
+    {
+        document.getElementById("depart-time").innerHTML = parseInt(departClock[0]) + ':' + departClock[1]
+    }*/
 
 
-        let leftSally = document.getElementById("left-sally")
-        let rightSally = document.getElementById("right-sally")
-        while (leftSally.firstChild && rightSally.firstChild) 
-        {
-            leftSally.removeChild(leftSally.firstChild);
-            rightSally.removeChild(rightSally.firstChild);
-        }
+    for (var i = 0; i < tablinks.length; i++)
+    {
+        tablinks[i].className = tablinks[i].className.replace(" active", "")
+    }
 
-        generateBody(res.carts[sortedStageTimes[activeWaveTab]])
-        activeWaveTab = parseInt(this.id)
-
-        let clock = this.id.split(':')
-        document.getElementById("stage-by-time").innerHTML = parseInt(clock[0]) + ':' + clock[1]
-
-        let departClock = this.id.split(':')
-        departClock[1] = parseInt(departClock[1]) + 30
-        if (departClock[1] >= 60)
-        {
-            document.getElementById("depart-time").innerHTML = (parseInt(departClock[0]) + 1) + ':' + (parseInt(departClock[1]) - 60)
-        }
-        else
-        {
-            document.getElementById("depart-time").innerHTML = parseInt(departClock[0]) + ':' + departClock[1]
-        }
-
-
-        for (var i = 0; i < tablinks.length; i++)
-        {
-            tablinks[i].className = tablinks[i].className.replace(" active", "")
-        }
-
-        this.className += " active"
-    })
+    this.className += " active"
+    injectCartData()
 }
 
 
