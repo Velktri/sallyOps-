@@ -8,4 +8,13 @@ function handleRemoved(tabID, info)
     })
 }
 
+function handleCartAudit(request, sender, sendResponse)
+{
+    if (request.command === 'SO_cart_audit')
+    {
+        console.log(request.auditedCarts)
+    }
+}
+
 browser.tabs.onRemoved.addListener(handleRemoved)
+browser.runtime.onMessage.addListener(handleCartAudit)

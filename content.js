@@ -10,13 +10,25 @@ function readTable()
         let rowData = extractRowData(rows[i])
         if (waveData[rowData.stageTime] === undefined)
         {
-            waveData[rowData.stageTime] = []
+            waveData[rowData.stageTime] = {}
         }
 
         let waveRoutes = waveData[rowData.stageTime]
 
         let found = false
-        waveRoutes.forEach(waveRoute => {
+        if (waveRoutes[rowData.route] !== undefined)
+        {
+            waveRoutes[rowData.route].carts.push(rowData.carts)
+            found = true
+        }
+
+        if (!found)
+        {
+            let temp = {}
+            temp[rowData.route] = { loc: rowData.loc, carts: [rowData.carts] }
+            waveData[rowData.stageTime] = { ...waveData[rowData.stageTime], ...temp }
+        }
+        /*waveRoutes.forEach(waveRoute => {
             if (waveRoute[rowData.route] !== undefined)
             {
                 waveRoute[rowData.route].carts.push(rowData.carts)
@@ -29,7 +41,7 @@ function readTable()
             let temp = {}
             temp[rowData.route] = { loc: rowData.loc, carts: [rowData.carts] }
             waveData[rowData.stageTime].push(temp)
-        }
+        }*/
     }
 
     // ignore parsing waves after depart time or when wave is checked as completed

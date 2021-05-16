@@ -1,6 +1,7 @@
 let activeWaveTab = 0
 let sortedStageTimes = []
 let cartData = {}
+let auditedCarts = {}
 let sortedRoutes = [...Array(20)]
 let duplicateSallyPorts = []
 
@@ -45,36 +46,117 @@ function processCartData()
             return 0
         })
 
-        /*cartData[sortedStageTimes[activeWaveTab]].forEach(route => {
-            let routeID = Object.keys(route)[0]
-            let routeObj = route[routeID]
-    
-            let sallyIndex = parseInt(routeObj.loc.split('.')[1].slice(1))
-            let sallyInfo = { route: routeID, loc: routeObj.loc, carts: routeObj.carts }
-    
-            if (sortedRoutes[sallyIndex - 1] === undefined)
-            {
-                sortedRoutes[sallyIndex - 1] = sallyInfo
-            }
-            else
-            {
-                duplicateSallyPorts.push(sallyInfo)
-            }
-        })*/
-
         return Promise.resolve('Carts are processed.')
+    })
+}
+
+function sendRoute(btn)
+{
+    let routeList = btn.parentNode.parentNode.parentNode.childNodes[1].childNodes[0].childNodes
+
+    routeList.forEach(element => {
+        let cartName = element.childNodes[1].innerHTML
+        element.childNodes[0].checked = btn.checked
+        
+        let found = false
+        if (auditedCarts[cartName] !== undefined)
+        {
+            auditedCarts[cartName] = btn.checked
+            found = true
+        }
+    
+        if (!found)
+        {
+            let temp = {}
+            temp[cartName] = btn.checked
+            auditedCarts = { ...auditedCarts, ...temp }
+        }
+    })
+
+    browser.runtime.sendMessage({
+        command: 'SO_cart_audit',
+        auditedCarts
+    })
+}
+
+function sendCart(btn)
+{
+    let cartName = btn.parentNode.childNodes[1].innerHTML
+
+    let found = false
+    if (auditedCarts[cartName] !== undefined)
+    {
+        auditedCarts[cartName] = btn.checked
+        found = true
+    }
+
+    if (!found)
+    {
+        let temp = {}
+        temp[cartName] = btn.checked
+        auditedCarts = { ...auditedCarts, ...temp }
+    }
+
+    browser.runtime.sendMessage({
+        command: 'SO_cart_audit',
+        auditedCarts
+    })
+}
+
+function updateCart(cartName, routeData)
+{
+    let loc = parseInt(routeData.loc.split('.')[1].slice(1))
+    let sallyHtmlContainer = document.getElementById('sallyRow_' + loc)
+
+    let routeList = sallyHtmlContainer.childNodes[1].childNodes[0].childNodes
+    routeList.forEach(ele => {
+        if (ele.childNodes[1].innerHTML === cartName) 
+        {
+            ele.childNodes[0].checked = true
+            sendCart(ele.childNodes[0])
+        }
+    })
+    
+}
+
+function checkForCart(cartName)
+{
+    let waveData = cartData[sortedStageTimes[activeWaveTab]]
+    Object.keys(waveData).forEach(routeKey => {
+        waveData[routeKey].carts.forEach(ele => {
+            if (cartName === ele.cart)
+            {
+                updateCart(cartName, waveData[routeKey])
+                return
+            }
+        })
     })
 }
 
 function injectCartData()
 {
     let waveData = cartData[sortedStageTimes[activeWaveTab]]
-    document.getElementById('routeAmount').innerHTML = waveData.length
+    let clock = sortedStageTimes[activeWaveTab].split(':')
+
+    document.getElementById('route-amount').innerHTML = Object.keys(waveData).length
+    document.getElementById('stage-by-time').innerHTML = parseInt(clock[0]) + ':' + clock[1]
+
+    if ((parseInt(clock[1]) + 30) >= 60)
+    {
+        document.getElementById("depart-time").innerHTML = (parseInt(clock[0]) + 1) + ':' + (parseInt(clock[1]) - 30)
+    }
+    else
+    {
+        document.getElementById("depart-time").innerHTML = parseInt(clock[0]) + ':' + (parseInt(clock[1]) + 30)
+    }
 
     for (let i = 1; i <= 20; i++) {
         let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
-        let sallyRow = waveData.find(potentialRow => {
-            let sallyLoc = potentialRow[Object.keys(potentialRow)[0]].loc.split('.')
+        let sallyTitle = sallyHtmlContainer.childNodes[0]
+        let sallyContents = sallyHtmlContainer.childNodes[1]
+
+        let sallyRoute = Object.keys(waveData).find(potentialRow => {
+            let sallyLoc = waveData[potentialRow].loc.split('.')
             if (sallyLoc[0] === 'STG')
             {
                 return parseInt(sallyLoc[1].slice(1)) === i
@@ -82,35 +164,25 @@ function injectCartData()
             return false
         })
 
-        if (sallyRow !== undefined)
-        {
-            let routeID = Object.keys(sallyRow)[0]
-            let routeObj = sallyRow[routeID]
-    
-            //let sallyIndex = parseInt(routeObj.loc.split('.')[1].slice(1))
-            //let sallyInfo = { route: routeID, loc: routeObj.loc, carts: routeObj.carts }
 
-            sallyHtmlContainer.childNodes[0].childNodes[1].innerHTML = routeID
-            sallyHtmlContainer.childNodes[0].childNodes[0].innerHTML = routeObj.loc.split('.')[1]
-            sallyHtmlContainer.childNodes[1].appendChild(list(routeObj.carts))
+        while (sallyContents.firstChild)
+        {
+            sallyContents.removeChild(sallyContents.firstChild)
+        }
+
+        if (sallyRoute !== undefined)
+        {
+            sallyTitle.childNodes[1].innerHTML = sallyRoute
+            sallyTitle.childNodes[0].innerHTML = waveData[sallyRoute].loc.split('.')[1]
+            sallyTitle.childNodes[2].childNodes[0].disabled = false
+            sallyContents.appendChild(list(waveData[sallyRoute].carts))
         }
         else
         {
-            sallyHtmlContainer.childNodes[0].childNodes[1].innerHTML = 'Empty'
-            sallyHtmlContainer.childNodes[0].childNodes[0].innerHTML = ''
-            //sallyHtmlContainer.childNodes[1].removeChild(sallyHtmlContainer.childNodes[0])
+            sallyTitle.childNodes[1].innerHTML = 'Empty'
+            sallyTitle.childNodes[0].innerHTML = ''
         }
     }
-
-
-
-    /*if (sallyInfo !== undefined)
-    {
-        routeTitle.innerHTML = sallyInfo.route
-        sallyLoc.innerHTML = sallyInfo.loc
-        selectionBtn.innerHTML = 'BTN'
-        contents.appendChild(list(sallyInfo.carts))
-    }*/
 }
 
 function selectWave()
@@ -124,31 +196,6 @@ function selectWave()
         }
     }
 
-    /*let leftSally = document.getElementById("left-sally")
-    let rightSally = document.getElementById("right-sally")
-    while (leftSally.firstChild && rightSally.firstChild) 
-    {
-        leftSally.removeChild(leftSally.firstChild);
-        rightSally.removeChild(rightSally.firstChild);
-    }
-
-    generateBody(res.carts[sortedStageTimes[activeWaveTab]])
-
-    let clock = this.id.split(':')
-    document.getElementById("stage-by-time").innerHTML = parseInt(clock[0]) + ':' + clock[1]
-
-    let departClock = this.id.split(':')
-    departClock[1] = parseInt(departClock[1]) + 30
-    if (departClock[1] >= 60)
-    {
-        document.getElementById("depart-time").innerHTML = (parseInt(departClock[0]) + 1) + ':' + (parseInt(departClock[1]) - 60)
-    }
-    else
-    {
-        document.getElementById("depart-time").innerHTML = parseInt(departClock[0]) + ':' + departClock[1]
-    }*/
-
-
     for (var i = 0; i < tablinks.length; i++)
     {
         tablinks[i].className = tablinks[i].className.replace(" active", "")
@@ -161,12 +208,22 @@ function selectWave()
 
 function list(elements)
 {
-    let ul = document.createElement('ul');
+    let ul = document.createElement('ul')
 
     elements.forEach(ele => {
         let li = document.createElement('li')
-        li.innerHTML = ele.cart
-        li.className = "cartList"
+        li.className = "cart-list"
+
+        let cartInput = document.createElement('input')
+        cartInput.className = 'cart-input'
+        cartInput.type = 'checkbox'
+        cartInput.onclick = () => sendCart(cartInput)
+
+        li.appendChild(cartInput)
+        let cartLabel = document.createElement('label')
+        cartLabel.innerHTML = ele.cart
+        li.appendChild(cartLabel)
+
         ul.appendChild(li)
     })
 
@@ -191,9 +248,17 @@ function buildRouteContainer(index)
     title.appendChild(routeTitle)
     routeTitle.innerHTML = "Empty Sally Row"
 
-    let selectionBtn = document.createElement('div')
-    selectionBtn.className = 'sallySelection'
-    title.appendChild(selectionBtn)
+    let BtnContainer = document.createElement('div')
+    BtnContainer.className = 'sallySelection'
+
+    let selectionInput = document.createElement('input')
+    selectionInput.id = 'sallyButton_' + (index + 1)
+    selectionInput.type = 'checkbox'
+    selectionInput.disabled = true
+    selectionInput.onclick = () => sendRoute(selectionInput)
+
+    BtnContainer.appendChild(selectionInput)
+    title.appendChild(BtnContainer)
 
 
     let contents = document.createElement('div')
@@ -261,6 +326,9 @@ function getCartInput()
 {
     let cartVal = document.getElementById("cart-scanner")
     document.getElementById("scanned-cart").innerHTML = cartVal.value
+
+    checkForCart('CRT1-671-UGI')//cartVal.value)
+
     cartVal.value = ""
     cartVal.blur()
 }

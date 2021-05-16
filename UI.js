@@ -66,9 +66,3 @@ document.getElementById("cartUI").onclick = () => {
         }
     })
 }
-
-document.getElementById("windowData").onclick = () => {
-    browser.storage.local.get("SO_UI").then((response) => {
-        console.log(response.SO_UI)
-    })
-}
