@@ -327,7 +327,7 @@ function getCartInput()
     let cartVal = document.getElementById("cart-scanner")
     document.getElementById("scanned-cart").innerHTML = cartVal.value
 
-    checkForCart('CRT1-671-UGI')//cartVal.value)
+    checkForCart(cartVal.value)
 
     cartVal.value = ""
     cartVal.blur()
