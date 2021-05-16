@@ -46,7 +46,15 @@ function processCartData()
             return 0
         })
 
-        return Promise.resolve('Carts are processed.')
+        return browser.storage.local.get('SO_audits').then((res) => {
+            if (res.SO_audits !== undefined)
+            {
+                auditedCarts = res.SO_audits
+            }
+            
+            return Promise.resolve('Carts are processed.')
+        })
+        
     })
 }
 
@@ -73,6 +81,8 @@ function sendRoute(btn)
         }
     })
 
+    btn.blur()
+
     browser.runtime.sendMessage({
         command: 'SO_cart_audit',
         auditedCarts
@@ -96,6 +106,8 @@ function sendCart(btn)
         temp[cartName] = btn.checked
         auditedCarts = { ...auditedCarts, ...temp }
     }
+
+    btn.blur()
 
     browser.runtime.sendMessage({
         command: 'SO_cart_audit',
@@ -215,6 +227,11 @@ function list(elements)
         li.className = "cart-list"
 
         let cartInput = document.createElement('input')
+
+        if (auditedCarts[ele.cart] !== undefined)
+        {
+            cartInput.checked = auditedCarts[ele.cart]
+        }
         cartInput.className = 'cart-input'
         cartInput.type = 'checkbox'
         cartInput.onclick = () => sendCart(cartInput)

@@ -12,7 +12,7 @@ function handleCartAudit(request, sender, sendResponse)
 {
     if (request.command === 'SO_cart_audit')
     {
-        console.log(request.auditedCarts)
+        browser.storage.local.set({ SO_audits: request.auditedCarts })
     }
 }
 
