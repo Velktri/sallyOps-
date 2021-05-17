@@ -46,11 +46,8 @@ function processCartData()
             return 0
         })
 
-        return browser.storage.local.get('SO_audits').then((res) => {
-            if (res.SO_audits !== undefined)
-            {
-                auditedCarts = res.SO_audits
-            }
+        return browser.storage.local.get('SO_audits').then((result) => {
+            auditedCarts = result.SO_audits
             
             return Promise.resolve('Carts are processed.')
         })
@@ -128,7 +125,6 @@ function updateCart(cartName, routeData)
             sendCart(ele.childNodes[0])
         }
     })
-    
 }
 
 function checkForCart(cartName)
@@ -162,12 +158,13 @@ function injectCartData()
         document.getElementById("depart-time").innerHTML = parseInt(clock[0]) + ':' + (parseInt(clock[1]) + 30)
     }
 
+
     for (let i = 1; i <= 20; i++) {
         let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
         let sallyTitle = sallyHtmlContainer.childNodes[0]
         let sallyContents = sallyHtmlContainer.childNodes[1]
 
-        let sallyRoute = Object.keys(waveData).find(potentialRow => {
+        let sallyRoute = Object.keys(waveData).filter(potentialRow => {
             let sallyLoc = waveData[potentialRow].loc.split('.')
             if (sallyLoc[0] === 'STG')
             {
@@ -175,6 +172,8 @@ function injectCartData()
             }
             return false
         })
+
+        console.log(sallyRoute)
 
 
         while (sallyContents.firstChild)
@@ -200,7 +199,7 @@ function injectCartData()
 function selectWave()
 {
     let tablinks = document.getElementsByClassName("tablinks")
-    for (var i = 0; i < tablinks.length; i++)
+    for (let i = 0; i < tablinks.length; i++)
     {
         if (tablinks[i].id === this.id)
         {
@@ -208,7 +207,7 @@ function selectWave()
         }
     }
 
-    for (var i = 0; i < tablinks.length; i++)
+    for (let i = 0; i < tablinks.length; i++)
     {
         tablinks[i].className = tablinks[i].className.replace(" active", "")
     }

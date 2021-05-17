@@ -45,6 +45,7 @@ document.getElementById("print").onclick = () => {
 
 document.getElementById("clear").onclick = () => {
     browser.storage.local.clear()
+    //browser.storage.local.set({ SO_audits: {} })
 }
 
 /* Creates the command tab and updates the tab id in storage */

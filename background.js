@@ -16,5 +16,8 @@ function handleCartAudit(request, sender, sendResponse)
     }
 }
 
+browser.storage.local.set({ SO_audits: {} })
+
 browser.tabs.onRemoved.addListener(handleRemoved)
 browser.runtime.onMessage.addListener(handleCartAudit)
+
