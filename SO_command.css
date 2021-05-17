@@ -57,8 +57,7 @@ body {
 }
 
 .overview {
-    height: 80px;
-    background-color: lightseagreen;
+    height: 120px;
     border-bottom: 1px solid black;
     padding: 10px 20px;
 }
@@ -78,22 +77,20 @@ ul {
 .routeContents {
     padding: 5px;
     height: 100px;
-    background-color: #499167; /* teal */
     border-radius: 0px 0px 5px 5px;
 }
 
 .outerShell {
-    border: 2px solid black;
+    border: 1px solid #778;
     border-radius: 5px;
     margin: 10px 2%;
     width: 90%;
 }
 
 .routeTitleContainer {
-    border-bottom: 2px solid black;
+    border-bottom: 1px solid #778;
     padding: 5px 0px;
     border-radius: 5px 5px 0px 0px;
-    background-color: #76F7BF; /* light blue */
     font-weight: 700;
     font-size: 22px;
 }
@@ -123,6 +120,9 @@ ul {
     top: 0;
     right: 0;
     z-index: -1;
+    max-width: 1px;
+    max-height: 1px;
+    opacity: 0%;
 }
 
 .cart-input {

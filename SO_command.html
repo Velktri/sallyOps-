@@ -8,10 +8,70 @@
         <link rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
     </head>
     <body>
-        <div>
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="https://bulma.io">
+                <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+                </a>
+            
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                </a>
+            </div>
+            
+            <div id="navbarBasicExample" class="navbar-menu">
+                <div class="navbar-start">
+                    <a class="navbar-item">
+                        Github icon
+                    </a>
+                
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link">
+                        Setting
+                        </a>
+                
+                        <div class="navbar-dropdown">
+                        <a class="navbar-item">
+                            To Do
+                        </a>
+                        <a class="navbar-item">
+                            To Do
+                        </a>
+                        <a class="navbar-item">
+                            To Do
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item">
+                            To Do
+                        </a>
+                        </div>
+                    </div>
+                </div>
 
-        </div>
-        <div id="tabList" class="tab"></div>
+                <div class="navbar-item">
+                    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                        <ul class="pagination-list" id="wave-list">
+                        </ul>
+                    </nav>
+                </div>
+            
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        Add clock for auto update
+                    </div>
+                    <div class="navbar-item">
+                        <a class="button is-link">
+                            <strong>Update Now</strong>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+
+
         <div id="waveOverview" class="overview">
             <div>
                 Scanner Input: <span id="scanned-cart"></span>
@@ -26,14 +86,13 @@
             <div>
                 Stage Time: <span id="stage-by-time">0</span>
             </div>
-
         </div>
 
+        <div id="tabList" class="tab"></div>
 
-
-        <div class="container tabcontent" id="waveData">
+        <div class="container is-fluid tabcontent" id="waveData">
             <div class="columns">
-                <div class="column is-one-quarter">
+                <div class="column">
                     <div class="card">
                         <header class="card-header">
                             <p class="card-header-title">
@@ -61,7 +120,7 @@
                     </div>
                 </div>
 
-                <div class="column is-one-quarter">
+                <div class="column">
                     <div class="card">
                         <header class="card-header">
                             <p class="card-header-title">
@@ -89,6 +148,62 @@
                     </div>
                 </div>
                 
+                <div class="column">
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                            Component
+                            </p>
+                            <button class="card-header-icon" aria-label="more options">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                            </button>
+                        </header>
+                        <div class="card-content">
+                            <div class="content">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
+                            <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
+                            <br>
+                            <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+                            </div>
+                        </div>
+                        <footer class="card-footer">
+                            <a href="#" class="card-footer-item">Save</a>
+                            <a href="#" class="card-footer-item">Edit</a>
+                            <a href="#" class="card-footer-item">Delete</a>
+                        </footer>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                            Component
+                            </p>
+                            <button class="card-header-icon" aria-label="more options">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                            </button>
+                        </header>
+                        <div class="card-content">
+                            <div class="content">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
+                            <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
+                            <br>
+                            <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+                            </div>
+                        </div>
+                        <footer class="card-footer">
+                            <a href="#" class="card-footer-item">Save</a>
+                            <a href="#" class="card-footer-item">Edit</a>
+                            <a href="#" class="card-footer-item">Delete</a>
+                        </footer>
+                    </div>
+                </div>
+
                 <div class="column">
                     <div class="card">
                         <header class="card-header">

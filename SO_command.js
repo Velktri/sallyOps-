@@ -51,8 +51,52 @@ function processCartData()
             
             return Promise.resolve('Carts are processed.')
         })
-        
     })
+}
+
+function buildWavePagination() 
+{
+    /*let tabList = document.getElementById('tabList')
+    sortedStageTimes.forEach((wave, i) => {
+        let tabBtn = document.createElement('button')
+        tabBtn.className = 'tablinks'
+        if (i === activeWaveTab)
+        {
+            tabBtn.className += ' active'
+        }
+
+        tabBtn.id = `${ wave }`
+        tabBtn.innerHTML = 'Wave ' + `${i + 1}`
+        tabBtn.onclick = selectWave
+
+        tabList.appendChild(tabBtn)
+    })*/
+
+    let pageList = document.getElementById('wave-list')
+
+    let pageOne = document.createElement('a')
+    pageOne.className = 'pagination-link is-current'
+    //pageOne.setAttribute('aria-label', 'Page 1')
+    //pageOne.setAttribute('aria-current', 'page')
+    pageOne.innerHTML = 1
+    pageOne.onclick = () => { selectWave(1) }
+
+    let listOne = document.createElement('li')
+    listOne.appendChild(pageOne)
+    pageList.appendChild(listOne)
+
+    for (let i = 2; i <= sortedStageTimes.length; i++)
+    {
+        let pagelink = document.createElement('a')
+        pagelink.className = 'pagination-link'
+        //pagelink.setAttribute('aria-label', 'Goto page ' + i)
+        pagelink.innerHTML = i
+        pageList.onclick = () => { selectWave(i) }
+
+        let listEle = document.createElement('li')
+        listEle.appendChild(pagelink)
+        pageList.appendChild(listEle)
+    }
 }
 
 function sendRoute(btn)
@@ -180,25 +224,25 @@ function injectCartData()
             duplicateRoutes.push(sallyRoutes[j])
         }
 
-        console.log(duplicateRoutes)
-
-
         while (sallyContents.firstChild)
         {
             sallyContents.removeChild(sallyContents.firstChild)
         }
+        sallyTitle.childNodes[2].checked = false
 
         if (sallyRoute !== undefined)
         {
-            sallyTitle.childNodes[1].innerHTML = sallyRoute
             sallyTitle.childNodes[0].innerHTML = waveData[sallyRoute].loc.split('.')[1]
+            sallyTitle.childNodes[1].innerHTML = sallyRoute
             sallyTitle.childNodes[2].childNodes[0].disabled = false
             sallyContents.appendChild(list(waveData[sallyRoute].carts))
         }
         else
         {
-            sallyTitle.childNodes[1].innerHTML = 'Empty'
             sallyTitle.childNodes[0].innerHTML = ''
+            sallyTitle.childNodes[1].innerHTML = 'Empty'
+            sallyTitle.childNodes[2].childNodes[0].disabled = true
+
         }
     }
 
@@ -221,9 +265,19 @@ function injectCartData()
     })
 }
 
-function selectWave()
+function selectWave(waveIndex)
 {
-    let tablinks = document.getElementsByClassName("tablinks")
+    let pageList = document.getElementById('wave-list').childNodes
+    pageList.forEach(page => {
+        page.className = 'pagination-link'
+    })
+
+    pageList[waveIndex - 1].className = 'pagination-link is-current'
+    console.log(pageList[waveIndex - 1])
+    activeWaveTab = parseInt(waveIndex - 1)
+    //owningBtn.setAttribute('aria-current', 'page')
+
+    /*let tablinks = document.getElementsByClassName("tablinks")
     for (let i = 0; i < tablinks.length; i++)
     {
         if (tablinks[i].id === this.id)
@@ -237,7 +291,7 @@ function selectWave()
         tablinks[i].className = tablinks[i].className.replace(" active", "")
     }
 
-    this.className += " active"
+    this.className += " active"*/
     injectCartData()
 }
 
@@ -342,22 +396,7 @@ function generateBody()
 
 window.onload = () => {
     processCartData().then(res => {
-        let tabList = document.getElementById('tabList')
-        sortedStageTimes.forEach((wave, i) => {
-            let tabBtn = document.createElement('button')
-            tabBtn.className = 'tablinks'
-            if (i === activeWaveTab)
-            {
-                tabBtn.className += ' active'
-            }
-    
-            tabBtn.id = `${ wave }`
-            tabBtn.innerHTML = 'Wave ' + `${i + 1}`
-            tabBtn.onclick = selectWave
-    
-            tabList.appendChild(tabBtn)
-        })
-    
+        buildWavePagination()
         generateBody()
         injectCartData()
     })
