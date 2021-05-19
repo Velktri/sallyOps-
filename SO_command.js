@@ -165,7 +165,7 @@ function injectCartData()
     document.getElementById('route-amount').innerHTML = Object.keys(waveData).length
     document.getElementById('stage-by-time').innerHTML = parseInt(clock[0]) + ':' + clock[1]
 
-    /*if ((parseInt(clock[1]) + 30) >= 60)
+    if ((parseInt(clock[1]) + 30) >= 60)
     {
         document.getElementById("depart-time").innerHTML = (parseInt(clock[0]) + 1) + ':' + (parseInt(clock[1]) - 30)
     }
@@ -173,7 +173,7 @@ function injectCartData()
     {
         document.getElementById("depart-time").innerHTML = parseInt(clock[0]) + ':' + (parseInt(clock[1]) + 30)
     }
-
+/*
     let duplicateRoutes = []
     for (let i = 1; i <= 20; i++) {
         let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
@@ -219,7 +219,7 @@ function injectCartData()
     }
 
     duplicateRoutes.forEach(route => {
-        for (let i = 1; i <= 20; i++)
+        for (let i = 20; i >= 1; i--)
         {
             let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
             let sallyTitle = sallyHtmlContainer.childNodes[0]
