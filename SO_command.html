@@ -1,38 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <title>Sally Ops Command</title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="SO_command.css"/>
-        <link rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
-    </head>
-    <body>
-        <nav class="navbar" role="navigation" aria-label="main navigation">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="https://bulma.io">
+<head>
+    <title>Sally Ops Command</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="SO_command.css" />
+    <link rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
+</head>
+
+<body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="https://bulma.io">
                 <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+                data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item">
+                    Github icon
                 </a>
-            
-                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                </a>
-            </div>
-            
-            <div id="navbarBasicExample" class="navbar-menu">
-                <div class="navbar-start">
-                    <a class="navbar-item">
-                        Github icon
-                    </a>
-                
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link">
+
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
                         Setting
-                        </a>
-                
-                        <div class="navbar-dropdown">
+                    </a>
+
+                    <div class="navbar-dropdown">
                         <a class="navbar-item">
                             To Do
                         </a>
@@ -46,204 +48,104 @@
                         <a class="navbar-item">
                             To Do
                         </a>
-                        </div>
                     </div>
                 </div>
+            </div>
 
+            <div class="navbar-item">
+                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <ul class="pagination-list" id="wave-list">
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="navbar-end">
                 <div class="navbar-item">
-                    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                        <ul class="pagination-list" id="wave-list">
-                        </ul>
-                    </nav>
+                    Add clock for auto update
                 </div>
-            
-                <div class="navbar-end">
-                    <div class="navbar-item">
-                        Add clock for auto update
-                    </div>
-                    <div class="navbar-item">
-                        <a class="button is-link">
-                            <strong>Update Now</strong>
-                        </a>
-                    </div>
+                <div class="navbar-item">
+                    <a class="button is-link">
+                        <strong>Update Now</strong>
+                    </a>
                 </div>
             </div>
-        </nav>
+        </div>
+    </nav>
 
 
 
-        <div id="waveOverview" class="overview">
-            <div>
-                Scanner Input: <span id="scanned-cart"></span>
-            </div>
+    <div id="waveOverview" class="overview">
+        <div>
+            Scanner Input: <span id="scanned-cart"></span>
+        </div>
 
-            <div>
-                Routes: <span id="route-amount">0</span>
-            </div>
-            <div>
-                Depart Time: <span id="depart-time">0</span>
-            </div>
-            <div>
-                Stage Time: <span id="stage-by-time">0</span>
+        <div>
+            Routes: <span id="route-amount">0</span>
+        </div>
+        <div>
+            Depart Time: <span id="depart-time">0</span>
+        </div>
+        <div>
+            Stage Time: <span id="stage-by-time">0</span>
+        </div>
+    </div>
+    <div class="columns">
+        <div class="column">
+            <div id="sallyRow_1" class="outerShell">
+                <div class="routeTitleContainer flex-container">
+                    <div class="sallyLocation">A01</div>
+                    <div class="routeTitle">CX4</div>
+                    <div class="sallySelection"><input id="sallyButton_1" type="checkbox"></div>
+                </div>
+                <div class="routeContents">
+                    <ul>
+                        <li class="cart-list"><input class="cart-input" type="checkbox"><label>CRT1-153-FLJ</label></li>
+                        <li class="cart-list"><input class="cart-input" type="checkbox"><label>CRT1-605-AXV</label></li>
+                        <li class="cart-list"><input class="cart-input" type="checkbox"><label>CRT1-710-OPO</label></li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <div id="tabList" class="tab"></div>
-
-        <div class="container is-fluid tabcontent" id="waveData">
-            <div class="columns">
-                <div class="column">
-                    <div class="card">
-                        <header class="card-header">
-                            <p class="card-header-title">
-                            Component
-                            </p>
-                            <button class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                            </button>
-                        </header>
-                        <div class="card-content">
-                            <div class="content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                            <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                            <br>
-                            <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                            </div>
-                        </div>
-                        <footer class="card-footer">
-                            <a href="#" class="card-footer-item">Save</a>
-                            <a href="#" class="card-footer-item">Edit</a>
-                            <a href="#" class="card-footer-item">Delete</a>
-                        </footer>
-                    </div>
+        <div class="column">
+            <div id="sallyRow_2" class="outerShell">
+                <div class="routeTitleContainer flex-container">
+                    <div class="sallyLocation">A01</div>
+                    <div class="routeTitle">CX4</div>
+                    <div class="sallySelection"><input id="sallyButton_1" type="checkbox"></div>
                 </div>
-
-                <div class="column">
-                    <div class="card">
-                        <header class="card-header">
-                            <p class="card-header-title">
-                            Component
-                            </p>
-                            <button class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                            </button>
-                        </header>
-                        <div class="card-content">
-                            <div class="content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                            <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                            <br>
-                            <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                            </div>
-                        </div>
-                        <footer class="card-footer">
-                            <a href="#" class="card-footer-item">Save</a>
-                            <a href="#" class="card-footer-item">Edit</a>
-                            <a href="#" class="card-footer-item">Delete</a>
-                        </footer>
-                    </div>
+                <div class="routeContents">
+                    <ul>
+                        <li class="cart-list"><input class="cart-input" type="checkbox"><label>CRT1-153-FLJ</label></li>
+                        <li class="cart-list"><input class="cart-input" type="checkbox"><label>CRT1-605-AXV</label></li>
+                        <li class="cart-list"><input class="cart-input" type="checkbox"><label>CRT1-710-OPO</label></li>
+                    </ul>
                 </div>
-                
-                <div class="column">
-                    <div class="card">
-                        <header class="card-header">
-                            <p class="card-header-title">
-                            Component
-                            </p>
-                            <button class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                            </button>
-                        </header>
-                        <div class="card-content">
-                            <div class="content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                            <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                            <br>
-                            <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                            </div>
-                        </div>
-                        <footer class="card-footer">
-                            <a href="#" class="card-footer-item">Save</a>
-                            <a href="#" class="card-footer-item">Edit</a>
-                            <a href="#" class="card-footer-item">Delete</a>
-                        </footer>
-                    </div>
-                </div>
-
-                <div class="column">
-                    <div class="card">
-                        <header class="card-header">
-                            <p class="card-header-title">
-                            Component
-                            </p>
-                            <button class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                            </button>
-                        </header>
-                        <div class="card-content">
-                            <div class="content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                            <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                            <br>
-                            <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                            </div>
-                        </div>
-                        <footer class="card-footer">
-                            <a href="#" class="card-footer-item">Save</a>
-                            <a href="#" class="card-footer-item">Edit</a>
-                            <a href="#" class="card-footer-item">Delete</a>
-                        </footer>
-                    </div>
-                </div>
-
-                <div class="column">
-                    <div class="card">
-                        <header class="card-header">
-                            <p class="card-header-title">
-                            Component
-                            </p>
-                            <button class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                            </button>
-                        </header>
-                        <div class="card-content">
-                            <div class="content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                            <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                            <br>
-                            <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                            </div>
-                        </div>
-                        <footer class="card-footer">
-                            <a href="#" class="card-footer-item">Save</a>
-                            <a href="#" class="card-footer-item">Edit</a>
-                            <a href="#" class="card-footer-item">Delete</a>
-                        </footer>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <div class="flex-container">
-                <div id="sally-1-5" class="sallyColumn flex-container"></div>
-                <div id="sally-6-10" class="sallyColumn flex-container"></div>
-                <div id="sally-11-15" class="sallyColumn flex-container"></div>
-                <div id="sally-16-20" class="sallyColumn flex-container"></div>
             </div>
         </div>
 
-        <input type="text" id="cart-scanner" class="scanner" name="cart-scanner">
-        <script src="SO_command.js"></script>
-    </body>
+        <div class="column">
+            <div id="sallyRow_2" class="outerShell">
+                <div class="routeTitleContainer flex-container">
+                    <div class="sallyLocation">A01</div>
+                    <div class="routeTitle">CX4</div>
+                    <div class="sallySelection"><input id="sallyButton_1" type="checkbox"></div>
+                </div>
+                <div class="routeContents">
+                    <ul>
+                        <li class="cart-list"><input class="cart-input" type="checkbox"><label>CRT1-153-FLJ</label></li>
+                        <li class="cart-list"><input class="cart-input" type="checkbox"><label>CRT1-605-AXV</label></li>
+                        <li class="cart-list"><input class="cart-input" type="checkbox"><label>CRT1-710-OPO</label></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container is-fluid tabcontent" id="waveData"></div>
+
+    <input type="text" id="cart-scanner" class="scanner" name="cart-scanner">
+    <script src="SO_command.js"></script>
+</body>
 </html>

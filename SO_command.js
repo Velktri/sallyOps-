@@ -48,50 +48,22 @@ function processCartData()
 
         return browser.storage.local.get('SO_audits').then((result) => {
             auditedCarts = result.SO_audits
-            
             return Promise.resolve('Carts are processed.')
         })
     })
 }
 
-function buildWavePagination() 
+function buildWavePagination()
 {
-    /*let tabList = document.getElementById('tabList')
-    sortedStageTimes.forEach((wave, i) => {
-        let tabBtn = document.createElement('button')
-        tabBtn.className = 'tablinks'
-        if (i === activeWaveTab)
-        {
-            tabBtn.className += ' active'
-        }
-
-        tabBtn.id = `${ wave }`
-        tabBtn.innerHTML = 'Wave ' + `${i + 1}`
-        tabBtn.onclick = selectWave
-
-        tabList.appendChild(tabBtn)
-    })*/
-
     let pageList = document.getElementById('wave-list')
-
-    let pageOne = document.createElement('a')
-    pageOne.className = 'pagination-link is-current'
-    //pageOne.setAttribute('aria-label', 'Page 1')
-    //pageOne.setAttribute('aria-current', 'page')
-    pageOne.innerHTML = 1
-    pageOne.onclick = () => { selectWave(1) }
-
-    let listOne = document.createElement('li')
-    listOne.appendChild(pageOne)
-    pageList.appendChild(listOne)
-
-    for (let i = 2; i <= sortedStageTimes.length; i++)
+    for (let i = 0; i < sortedStageTimes.length; i++)
     {
         let pagelink = document.createElement('a')
         pagelink.className = 'pagination-link'
-        //pagelink.setAttribute('aria-label', 'Goto page ' + i)
-        pagelink.innerHTML = i
-        pageList.onclick = () => { selectWave(i) }
+        if (i == 0) { pagelink.className += ' is-current' }
+
+        pagelink.innerHTML = i + 1
+        pagelink.onclick = () => { selectWave(i) }
 
         let listEle = document.createElement('li')
         listEle.appendChild(pagelink)
@@ -193,7 +165,7 @@ function injectCartData()
     document.getElementById('route-amount').innerHTML = Object.keys(waveData).length
     document.getElementById('stage-by-time').innerHTML = parseInt(clock[0]) + ':' + clock[1]
 
-    if ((parseInt(clock[1]) + 30) >= 60)
+    /*if ((parseInt(clock[1]) + 30) >= 60)
     {
         document.getElementById("depart-time").innerHTML = (parseInt(clock[0]) + 1) + ':' + (parseInt(clock[1]) - 30)
     }
@@ -262,36 +234,23 @@ function injectCartData()
                 break
             }
         }
-    })
+    })*/
 }
 
 function selectWave(waveIndex)
 {
-    let pageList = document.getElementById('wave-list').childNodes
-    pageList.forEach(page => {
-        page.className = 'pagination-link'
+    
+    let pageList = Array.from(document.getElementById('wave-list').childNodes).filter(node => {
+        return node.tagName === 'LI'
     })
 
-    pageList[waveIndex - 1].className = 'pagination-link is-current'
-    console.log(pageList[waveIndex - 1])
-    activeWaveTab = parseInt(waveIndex - 1)
-    //owningBtn.setAttribute('aria-current', 'page')
+    pageList.forEach(page => {
+        page.childNodes[0].className = 'pagination-link'
+    })
 
-    /*let tablinks = document.getElementsByClassName("tablinks")
-    for (let i = 0; i < tablinks.length; i++)
-    {
-        if (tablinks[i].id === this.id)
-        {
-            activeWaveTab = i
-        }
-    }
+    pageList[waveIndex].childNodes[0].className = 'pagination-link is-current'
+    activeWaveTab = parseInt(waveIndex)
 
-    for (let i = 0; i < tablinks.length; i++)
-    {
-        tablinks[i].className = tablinks[i].className.replace(" active", "")
-    }
-
-    this.className += " active"*/
     injectCartData()
 }
 
@@ -327,70 +286,53 @@ function list(elements)
 
 function buildRouteContainer(index)
 {
-    let outerShell = document.createElement('div')
-    outerShell.id = 'sallyRow_' + (index + 1)
-    outerShell.className = 'outerShell'
+     return `<div class="column">
+                <div id="sallyRow_${index + 1}" class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            CX4
+                        </p>
 
-    let title = document.createElement('div')
-    title.className = 'routeTitleContainer flex-container'
-
-    let sallyLoc = document.createElement('div')
-    sallyLoc.className = 'sallyLocation'
-    title.appendChild(sallyLoc)
-
-    let routeTitle = document.createElement('div')
-    routeTitle.className = 'routeTitle'
-    title.appendChild(routeTitle)
-    routeTitle.innerHTML = "Empty Sally Row"
-
-    let BtnContainer = document.createElement('div')
-    BtnContainer.className = 'sallySelection'
-
-    let selectionInput = document.createElement('input')
-    selectionInput.id = 'sallyButton_' + (index + 1)
-    selectionInput.type = 'checkbox'
-    selectionInput.disabled = true
-    selectionInput.onclick = () => sendRoute(selectionInput)
-
-    BtnContainer.appendChild(selectionInput)
-    title.appendChild(BtnContainer)
-
-
-    let contents = document.createElement('div')
-    contents.className = 'routeContents'
-
-    outerShell.appendChild(title)
-    outerShell.appendChild(contents)
-
-
-    return outerShell
+                        <p class="card-header-title is-centered">
+                        A01
+                        </p>
+                        <button class="card-header-icon" aria-label="more options">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </header>
+                    <div class="card-content">
+                        <button class="button is-fullwidth is-dark">
+                            <span class="icon is-small">
+                                <i class="fas fa-check"></i>
+                            </span>
+                            <span>CRT1-153-FLJ</span>
+                        </button>
+                        <button class="button is-fullwidth is-dark">CRT1-605-AXV</button>
+                        <button class="button is-fullwidth is-dark">CRT1-710-OPO</button>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="#" class="card-footer-item">Staged</a>
+                    </footer>
+                </div>
+            </div>`
 }
 
 function generateBody()
 {
-    let col1 = document.getElementById('sally-1-5')
-    let col2 = document.getElementById('sally-6-10')
-    let col3 = document.getElementById('sally-11-15')
-    let col4 = document.getElementById('sally-16-20')
-
+    let contentBody = document.getElementById('waveData')
+    let section
     for (let i = 0; i < 20; i++)
     {
-        if (i < 5)
+        if (i % 4 === 0)
         {
-            col1.appendChild(buildRouteContainer(i))
+            section = document.createElement('div')
+            section.className = 'columns tab-spacing'
+            contentBody.appendChild(section)
         }
-        else if (i < 10)
-        {
-            col2.appendChild(buildRouteContainer(i))
-        }
-        else if (i < 15)
-        {
-            col3.appendChild(buildRouteContainer(i))
-        }
-        else
-        {
-            col4.appendChild(buildRouteContainer(i))
-        }
+
+        section.innerHTML += buildRouteContainer(i)
     }
 }
 
