@@ -105,21 +105,23 @@ function sendRoute(btn)
 function sendCart(btn)
 {
     let cartName = btn.children[0].children[0].children[1].innerHTML
+
+    let uniqueCartName = activeWaveTab + '|' + cartName
     let flip = (btn.getAttribute('data-val') === 'true') ? false : true
 
     btn.setAttribute('data-val', flip)
 
     let found = false
-    if (auditedCarts[cartName] !== undefined)
+    if (auditedCarts[uniqueCartName] !== undefined)
     {
-        auditedCarts[cartName] = flip
+        auditedCarts[uniqueCartName] = flip
         found = true
     }
 
     if (!found)
     {
         let temp = {}
-        temp[cartName] = flip
+        temp[uniqueCartName] = flip
         auditedCarts = { ...auditedCarts, ...temp }
     }
 
@@ -144,7 +146,6 @@ function updateCart(cartName, routeData)
     routeList.forEach(ele => {
         if (ele.childNodes[1].innerHTML === cartName) 
         {
-            ele.childNodes[0].checked = true
             sendCart(ele.childNodes[0])
         }
     })
@@ -270,8 +271,10 @@ function buildRouteList(elements)
     let statusMap = {'Staged': 'is-success', 'Ready': 'is-warning', 'Not Ready': 'is-light', 'Missing': 'is-danger', 'Sidelined': 'is-danger'}
     let routeList = ''
     elements.forEach(ele => {
-        let auditData = auditedCarts[ele.cart]
-        if (auditedCarts[ele.cart] === undefined) { auditData = false }
+
+        let uniqueCartName = activeWaveTab + '|' + ele.cart
+        let auditData = auditedCarts[uniqueCartName]
+        if (auditedCarts[uniqueCartName] === undefined) { auditData = false }
 
         routeList += `<div class="so-button" data-val="${auditData}">
                         <div class="level">
