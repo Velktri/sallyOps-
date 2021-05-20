@@ -182,7 +182,75 @@ function injectCartData()
         document.getElementById("depart-time").innerHTML = parseInt(clock[0]) + ':' + (parseInt(clock[1]) + 30)
     }
 
-    let duplicateRoutes = []
+    let sortedRoutes = {}
+    let overflowRoutes = []
+    Object.keys(waveData).forEach(route => {
+        let sallyLoc = waveData[route].loc.split('.')
+        if (sallyLoc[0] === 'STG')
+        {
+            if (Object.keys(sortedRoutes).includes(sallyLoc[1].charAt(0))) 
+            {
+                if (sortedRoutes[sallyLoc[1].charAt(0)].length < 4)
+                {
+                    sortedRoutes[sallyLoc[1].charAt(0)].push(route)
+                }
+                else 
+                {
+                    overflowRoutes.push(route)
+                }
+            }
+            else
+            {
+                sortedRoutes[sallyLoc[1].charAt(0)] = []
+                sortedRoutes[sallyLoc[1].charAt(0)].push(route)
+            }
+
+            /*let bucketIndex = ((letterMap[sallyLoc[1].charAt(0)] * 4) + parseInt(sallyLoc[1].slice(1))) - 1
+
+            if (sortedRoutes[bucketIndex] === undefined)
+            {
+                sortedRoutes[bucketIndex] = route
+            }
+            else
+            {
+                overflowRoutes.push(route)
+            }*/
+        }
+    })
+
+    console.log(sortedRoutes)
+    
+    let letterMap = {'A': 0, 'B': 1, 'C': 2, 'D': 3, "E": 4 }
+    for (let i = 1; i <= 20; i++) 
+    {
+        let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
+        let sallyTitle = sallyHtmlContainer.children[0]
+        let sallyContents = sallyHtmlContainer.children[1]
+
+        while (sallyContents.firstChild)
+        {
+            sallyContents.removeChild(sallyContents.firstChild)
+        }
+
+        let sallyRoute = sortedRoutes[i - 1]
+        if (sallyRoute !== undefined)
+        {
+            sallyTitle.children[0].innerHTML = waveData[sallyRoute].loc.split('.')[1]
+            sallyTitle.children[1].innerHTML = sallyRoute
+            sallyContents.innerHTML = buildRouteList(waveData[sallyRoute].carts)
+
+            Array.from(sallyContents.children).forEach(element => {
+                element.onclick = () => sendCart(element)
+            })
+        }
+        else
+        {
+            sallyTitle.children[0].innerHTML = ''
+            sallyTitle.children[1].innerHTML = 'Empty'
+        }
+    }
+
+    /*let duplicateRoutes = []
     for (let i = 1; i <= 20; i++) {
         let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
         let sallyTitle = sallyHtmlContainer.children[0]
@@ -227,7 +295,7 @@ function injectCartData()
     }
 
     duplicateRoutes.forEach(route => {
-        for (let i = 20; i >= 1; i--)
+        for (let i = 1; i <= 20; i++)
         {
             let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
             let sallyTitle = sallyHtmlContainer.children[0]
@@ -245,7 +313,7 @@ function injectCartData()
                 break
             }
         }
-    })
+    })*/
 }
 
 function selectWave(waveIndex)
