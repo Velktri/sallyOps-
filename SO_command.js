@@ -268,7 +268,7 @@ function selectWave(waveIndex)
 
 function buildRouteList(elements)
 {
-    let statusMap = {'Staged': 'is-success', 'Ready': 'is-warning', 'Not Ready': 'is-light', 'Missing': 'is-danger', 'Sidelined': 'is-danger'}
+    let statusMap = { 'Staged': 'is-success', 'Ready': 'is-warning', 'Not Ready': 'is-light', 'Missing': 'is-danger', 'Sidelined': 'is-danger' }
     let routeList = ''
     elements.forEach(ele => {
 
