@@ -104,29 +104,36 @@ function sendRoute(btn)
 
 function sendCart(btn)
 {
-    let cartName = btn.parentNode.childNodes[1].innerHTML
+    let cartName = btn.children[0].children[0].children[1].innerHTML
+    let flip = (btn.getAttribute('data-val') === 'true') ? false : true
+
+    btn.setAttribute('data-val', flip)
 
     let found = false
     if (auditedCarts[cartName] !== undefined)
     {
-        auditedCarts[cartName] = btn.checked
+        auditedCarts[cartName] = flip
         found = true
     }
 
     if (!found)
     {
         let temp = {}
-        temp[cartName] = btn.checked
+        temp[cartName] = flip
         auditedCarts = { ...auditedCarts, ...temp }
     }
 
-    btn.blur()
+    btn.children[0].children[0].children[0].innerHTML = setListStyle(flip)
 
     browser.runtime.sendMessage({
         command: 'SO_cart_audit',
         auditedCarts
     })
+
+    console.log(auditedCarts)
+
 }
+
 
 function updateCart(cartName, routeData)
 {
@@ -173,12 +180,12 @@ function injectCartData()
     {
         document.getElementById("depart-time").innerHTML = parseInt(clock[0]) + ':' + (parseInt(clock[1]) + 30)
     }
-/*
+
     let duplicateRoutes = []
     for (let i = 1; i <= 20; i++) {
         let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
-        let sallyTitle = sallyHtmlContainer.childNodes[0]
-        let sallyContents = sallyHtmlContainer.childNodes[1]
+        let sallyTitle = sallyHtmlContainer.children[0]
+        let sallyContents = sallyHtmlContainer.children[1]
 
         let sallyRoutes = Object.keys(waveData).filter(potentialRow => {
             let sallyLoc = waveData[potentialRow].loc.split('.')
@@ -200,21 +207,21 @@ function injectCartData()
         {
             sallyContents.removeChild(sallyContents.firstChild)
         }
-        sallyTitle.childNodes[2].checked = false
 
         if (sallyRoute !== undefined)
         {
-            sallyTitle.childNodes[0].innerHTML = waveData[sallyRoute].loc.split('.')[1]
-            sallyTitle.childNodes[1].innerHTML = sallyRoute
-            sallyTitle.childNodes[2].childNodes[0].disabled = false
-            sallyContents.appendChild(list(waveData[sallyRoute].carts))
+            sallyTitle.children[0].innerHTML = waveData[sallyRoute].loc.split('.')[1]
+            sallyTitle.children[1].innerHTML = sallyRoute
+            sallyContents.innerHTML = buildRouteList(waveData[sallyRoute].carts)
+
+            Array.from(sallyContents.children).forEach(element => {
+                element.onclick = () => sendCart(element)
+            })
         }
         else
         {
-            sallyTitle.childNodes[0].innerHTML = ''
-            sallyTitle.childNodes[1].innerHTML = 'Empty'
-            sallyTitle.childNodes[2].childNodes[0].disabled = true
-
+            sallyTitle.children[0].innerHTML = ''
+            sallyTitle.children[1].innerHTML = 'Empty'
         }
     }
 
@@ -222,19 +229,22 @@ function injectCartData()
         for (let i = 20; i >= 1; i--)
         {
             let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
-            let sallyTitle = sallyHtmlContainer.childNodes[0]
-            let sallyContents = sallyHtmlContainer.childNodes[1]
-            if (sallyTitle.childNodes[1].innerHTML === 'Empty')
+            let sallyTitle = sallyHtmlContainer.children[0]
+            let sallyContents = sallyHtmlContainer.children[1]
+            if (sallyTitle.children[1].innerHTML === 'Empty')
             {
-                sallyTitle.childNodes[1].innerHTML = route
-                sallyTitle.childNodes[0].innerHTML = waveData[route].loc.split('.')[1]
-                sallyTitle.childNodes[2].childNodes[0].disabled = false
-                sallyContents.appendChild(list(waveData[route].carts))
+                sallyTitle.children[1].innerHTML = route
+                sallyTitle.children[0].innerHTML = waveData[route].loc.split('.')[1]
+                sallyContents.innerHTML = buildRouteList(waveData[route].carts)
+                
+                Array.from(sallyContents.children).forEach(element => {
+                    element.onclick = () => sendCart(element)
+                })
 
                 break
             }
         }
-    })*/
+    })
 }
 
 function selectWave(waveIndex)
@@ -255,66 +265,57 @@ function selectWave(waveIndex)
 }
 
 
-function list(elements)
+function buildRouteList(elements)
 {
-    let ul = document.createElement('ul')
-
+    let statusMap = {'Staged': 'is-success', 'Ready': 'is-warning', 'Not Ready': 'is-light', 'Missing': 'is-danger', 'Sidelined': 'is-danger'}
+    let routeList = ''
     elements.forEach(ele => {
-        let li = document.createElement('li')
-        li.className = "cart-list"
+        let auditData = auditedCarts[ele.cart]
+        if (auditedCarts[ele.cart] === undefined) { auditData = false }
 
-        let cartInput = document.createElement('input')
-
-        if (auditedCarts[ele.cart] !== undefined)
-        {
-            cartInput.checked = auditedCarts[ele.cart]
-        }
-        cartInput.className = 'cart-input'
-        cartInput.type = 'checkbox'
-        cartInput.onclick = () => sendCart(cartInput)
-
-        li.appendChild(cartInput)
-        let cartLabel = document.createElement('label')
-        cartLabel.innerHTML = ele.cart
-        li.appendChild(cartLabel)
-
-        ul.appendChild(li)
+        routeList += `<div class="so-button" data-val="${auditData}">
+                        <div class="level">
+                            <div class="level-left">
+                                <span class="icon so-icon-margin-right">
+                                    ${setListStyle(auditData)}
+                                </span>
+                                <span>${ele.cart}</span>
+                            </div>
+        
+                            <div class="level-right">
+                                <div class="tag ${statusMap[ele.status]}">${ele.status}</div>
+                            </div>
+                        </div>
+                    </div>`
     })
 
-    return ul
+    return routeList
 }
+
+function setListStyle(isAudited)
+{
+    return (isAudited) ? '<i class="icon has-text-success ion-md-checkmark-circle so-icon-large"></i>' :
+                         '<i class="icon has-text-danger ion-md-radio-button-off so-icon-large"></i>'
+}
+
 
 function buildRouteContainer(index)
 {
      return `<div class="column">
                 <div id="sallyRow_${index + 1}" class="card">
                     <header class="card-header">
-                        <p class="card-header-title">
-                            CX4
-                        </p>
+                        <p class="card-header-title"></p>
 
-                        <p class="card-header-title is-centered">
-                        A01
-                        </p>
-                        <button class="card-header-icon" aria-label="more options">
+                        <p class="card-header-title is-centered"></p>
+
+                        <button class="button card-header-icon is-inverted" aria-label="more options">
                             <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                <i class="ion-md-arrow-dropdown so-icon-large" aria-hidden="true"></i>
                             </span>
                         </button>
                     </header>
                     <div class="card-content">
-                        <button class="button is-fullwidth is-dark">
-                            <span class="icon is-small">
-                                <i class="fas fa-check"></i>
-                            </span>
-                            <span>CRT1-153-FLJ</span>
-                        </button>
-                        <button class="button is-fullwidth is-dark">CRT1-605-AXV</button>
-                        <button class="button is-fullwidth is-dark">CRT1-710-OPO</button>
                     </div>
-                    <footer class="card-footer">
-                        <a href="#" class="card-footer-item">Staged</a>
-                    </footer>
                 </div>
             </div>`
 }

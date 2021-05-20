@@ -132,3 +132,34 @@ ul {
 .tab-spacing {
     padding: 0.5rem 0rem;
 }
+
+.so-icon-large {
+    font-size: 24px;
+}
+
+.so-icon-margin-right {
+    margin-right: .75em;
+}
+
+.so-button {
+    border-radius: .4em;
+    border: 1px solid transparent;
+    padding-bottom: calc(.5em - 1px);
+    padding-left: .75em;
+    padding-right: .75em;
+    padding-top: calc(.5em - 1px);
+    cursor: pointer;
+    user-select:none;
+}
+
+.so-button:hover {
+    background-color: #3a4344;
+}
+
+.so-button:active {
+    border-color: #282f2f;
+}
+
+.card-content {
+    padding: .75rem !important;
+}
