@@ -102,12 +102,13 @@ function sendRoute(btn)
     })
 }
 
-function sendCart(btn)
+function sendCart(btn, isAlwaysTrue)
 {
     let cartName = btn.children[0].children[0].children[1].innerHTML
 
     let uniqueCartName = activeWaveTab + '|' + cartName
     let flip = (btn.getAttribute('data-val') === 'true') ? false : true
+    flip = flip || isAlwaysTrue
 
     btn.setAttribute('data-val', flip)
 
@@ -139,14 +140,21 @@ function sendCart(btn)
 
 function updateCart(cartName, routeData)
 {
-    let loc = parseInt(routeData.loc.split('.')[1].slice(1))
-    let sallyHtmlContainer = document.getElementById('sallyRow_' + loc)
-
-    let routeList = sallyHtmlContainer.childNodes[1].childNodes[0].childNodes
-    routeList.forEach(ele => {
-        if (ele.childNodes[1].innerHTML === cartName) 
+    let sallyHtmlContainer = undefined
+    for (let i = 1; i <= 20; i++)
+    {
+        let potentialContainer = document.getElementById('sallyRow_' + i)
+        if (potentialContainer.children[0].children[0].innerHTML === routeData.loc.split('.')[1])
         {
-            sendCart(ele.childNodes[0])
+            sallyHtmlContainer = potentialContainer
+        }
+    }
+
+    let routeList = sallyHtmlContainer.children[1].children
+    Array.from(routeList).forEach(ele => {
+        if (ele.children[0].children[0].children[1].innerHTML === cartName) 
+        {
+            sendCart(ele, true)
         }
     })
 }
@@ -188,13 +196,13 @@ function injectCartData()
         let sallyLoc = waveData[route].loc.split('.')
         if (sallyLoc[0] === 'STG')
         {
-            if (Object.keys(sortedRoutes).includes(sallyLoc[1].charAt(0))) 
+            if (Object.keys(sortedRoutes).includes(sallyLoc[1].charAt(0)))
             {
                 if (sortedRoutes[sallyLoc[1].charAt(0)].length < 4)
                 {
                     sortedRoutes[sallyLoc[1].charAt(0)].push(route)
                 }
-                else 
+                else
                 {
                     overflowRoutes.push(route)
                 }
@@ -205,23 +213,24 @@ function injectCartData()
                 sortedRoutes[sallyLoc[1].charAt(0)].push(route)
             }
 
-            /*let bucketIndex = ((letterMap[sallyLoc[1].charAt(0)] * 4) + parseInt(sallyLoc[1].slice(1))) - 1
-
-            if (sortedRoutes[bucketIndex] === undefined)
-            {
-                sortedRoutes[bucketIndex] = route
-            }
-            else
-            {
-                overflowRoutes.push(route)
-            }*/
         }
     })
 
-    console.log(sortedRoutes)
-    
-    let letterMap = {'A': 0, 'B': 1, 'C': 2, 'D': 3, "E": 4 }
-    for (let i = 1; i <= 20; i++) 
+    let letterMap = ['A', 'B', 'C', 'D', 'E']
+    let routeList = Array(20).fill(undefined)
+    for (let i = 0; i < letterMap.length; i++)
+    {
+        if (Object.keys(sortedRoutes).includes(letterMap[i]))
+        {
+            for (let j = 0; j < sortedRoutes[letterMap[i]].length; j++)
+            {
+                routeList[(i * 4) + j] = sortedRoutes[letterMap[i]][j]
+            }
+        }
+    }
+
+    console.log(routeList)
+    for (let i = 1; i <= 20; i++)
     {
         let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
         let sallyTitle = sallyHtmlContainer.children[0]
@@ -232,7 +241,7 @@ function injectCartData()
             sallyContents.removeChild(sallyContents.firstChild)
         }
 
-        let sallyRoute = sortedRoutes[i - 1]
+        let sallyRoute = routeList[i - 1]
         if (sallyRoute !== undefined)
         {
             sallyTitle.children[0].innerHTML = waveData[sallyRoute].loc.split('.')[1]
@@ -240,7 +249,7 @@ function injectCartData()
             sallyContents.innerHTML = buildRouteList(waveData[sallyRoute].carts)
 
             Array.from(sallyContents.children).forEach(element => {
-                element.onclick = () => sendCart(element)
+                element.onclick = () => sendCart(element, false)
             })
         }
         else
@@ -249,71 +258,6 @@ function injectCartData()
             sallyTitle.children[1].innerHTML = 'Empty'
         }
     }
-
-    /*let duplicateRoutes = []
-    for (let i = 1; i <= 20; i++) {
-        let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
-        let sallyTitle = sallyHtmlContainer.children[0]
-        let sallyContents = sallyHtmlContainer.children[1]
-
-        let sallyRoutes = Object.keys(waveData).filter(potentialRow => {
-            let sallyLoc = waveData[potentialRow].loc.split('.')
-            if (sallyLoc[0] === 'STG')
-            {
-                return parseInt(sallyLoc[1].slice(1)) === i
-            }
-            return false
-        })
-
-
-        let sallyRoute = sallyRoutes[0]
-        for (let j = 1; j < sallyRoutes.length; j++)
-        {
-            duplicateRoutes.push(sallyRoutes[j])
-        }
-
-        while (sallyContents.firstChild)
-        {
-            sallyContents.removeChild(sallyContents.firstChild)
-        }
-
-        if (sallyRoute !== undefined)
-        {
-            sallyTitle.children[0].innerHTML = waveData[sallyRoute].loc.split('.')[1]
-            sallyTitle.children[1].innerHTML = sallyRoute
-            sallyContents.innerHTML = buildRouteList(waveData[sallyRoute].carts)
-
-            Array.from(sallyContents.children).forEach(element => {
-                element.onclick = () => sendCart(element)
-            })
-        }
-        else
-        {
-            sallyTitle.children[0].innerHTML = ''
-            sallyTitle.children[1].innerHTML = 'Empty'
-        }
-    }
-
-    duplicateRoutes.forEach(route => {
-        for (let i = 1; i <= 20; i++)
-        {
-            let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
-            let sallyTitle = sallyHtmlContainer.children[0]
-            let sallyContents = sallyHtmlContainer.children[1]
-            if (sallyTitle.children[1].innerHTML === 'Empty')
-            {
-                sallyTitle.children[1].innerHTML = route
-                sallyTitle.children[0].innerHTML = waveData[route].loc.split('.')[1]
-                sallyContents.innerHTML = buildRouteList(waveData[route].carts)
-                
-                Array.from(sallyContents.children).forEach(element => {
-                    element.onclick = () => sendCart(element)
-                })
-
-                break
-            }
-        }
-    })*/
 }
 
 function selectWave(waveIndex)
