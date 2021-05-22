@@ -53,7 +53,7 @@ document.getElementById("cartUI").onclick = () => {
     browser.storage.local.get('SO_UI').then(res => {
         if (res.SO_UI === undefined || res.SO_UI === browser.tabs.TAB_ID_NONE)
         {
-            browser.tabs.create({ url: "SO_command.html" }).then((tab) => {
+            browser.tabs.create({ url: 'build/index.html'/*"SO_command.html"*/ }).then((tab) => {
                 browser.storage.local.set({ SO_UI: tab.id })
             })
         }

@@ -144,10 +144,10 @@ ul {
 .so-button {
     border-radius: .4em;
     border: 1px solid transparent;
-    padding-bottom: calc(.5em - 1px);
-    padding-left: .75em;
-    padding-right: .75em;
-    padding-top: calc(.5em - 1px);
+    padding-bottom: calc(.35em - 1px);
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-top: calc(.35em - 1px);
     cursor: pointer;
     user-select:none;
 }
@@ -161,5 +161,9 @@ ul {
 }
 
 .card-content {
-    padding: .75rem !important;
+    padding: .5rem !important;
+}
+
+.card {
+    height: 100%;
 }

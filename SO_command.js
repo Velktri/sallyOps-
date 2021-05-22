@@ -132,9 +132,6 @@ function sendCart(btn, isAlwaysTrue)
         command: 'SO_cart_audit',
         auditedCarts
     })
-
-    console.log(auditedCarts)
-
 }
 
 
@@ -229,7 +226,6 @@ function injectCartData()
         }
     }
 
-    console.log(routeList)
     for (let i = 1; i <= 20; i++)
     {
         let sallyHtmlContainer = document.getElementById('sallyRow_' + i)
@@ -251,6 +247,8 @@ function injectCartData()
             Array.from(sallyContents.children).forEach(element => {
                 element.onclick = () => sendCart(element, false)
             })
+
+            sallyTitle.children[2].children[0].innerHTML = setListStyle(isRouteAudited(sallyHtmlContainer))
         }
         else
         {
@@ -276,7 +274,6 @@ function selectWave(waveIndex)
 
     injectCartData()
 }
-
 
 function buildRouteList(elements)
 {
@@ -313,6 +310,12 @@ function setListStyle(isAudited)
                          '<i class="icon has-text-danger ion-md-radio-button-off so-icon-large"></i>'
 }
 
+function isRouteAudited(sallyCard)
+{
+    sallyCard.children[1].children[0]
+    return false
+}
+
 
 function buildRouteContainer(index)
 {
@@ -323,11 +326,9 @@ function buildRouteContainer(index)
 
                         <p class="card-header-title is-centered"></p>
 
-                        <button class="button card-header-icon is-inverted" aria-label="more options">
-                            <span class="icon">
-                                <i class="ion-md-arrow-dropdown so-icon-large" aria-hidden="true"></i>
-                            </span>
-                        </button>
+                        <div class="so-button card-header-icon is-inverted" aria-label="more options">
+                            <span class="icon"></span>
+                        </div>
                     </header>
                     <div class="card-content">
                     </div>
