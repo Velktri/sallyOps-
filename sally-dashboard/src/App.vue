@@ -54,7 +54,7 @@
                         Add clock for auto update
                     </div>
                     <div class="navbar-item">
-                        <button class="button is-link">
+                        <button class="button is-link" @click="updateCartData()">
                             <strong>Update Now</strong>
                         </button>
                     </div>
@@ -228,13 +228,58 @@ export default {
 
         clickedPagination(i) {
             this.activeWaveTab = (i - 1)
-        }
+        },
+
+        getCartInput() {
+            let cartVal = document.getElementById("cart-scanner")
+            document.getElementById("scanned-cart").innerHTML = cartVal.value
+
+            this.checkForCart(cartVal.value)
+
+            cartVal.value = ""
+            cartVal.blur()
+        },
+
+        checkForCart(cartName) {
+            let waveData = this.cartData[this.sortedStageTimes[this.activeWaveTab]]
+            Object.keys(waveData).forEach(routeKey => {
+                waveData[routeKey].carts.forEach(element => {
+                    if (cartName === element.cart)
+                    {
+                        this.updateCart(cartName, waveData[routeKey])
+                        return
+                    }
+                })
+            })
+        },
+
+        updateCart(cartName, routeData) {
+            console.log(cartName)
+            console.log(routeData)
+        },
     },
 
     async created() {
         this.processCartData().then(() => {
             this.processed = true
         })
+
+        window.addEventListener("keypress", (e) => {
+            if (e.target.tagName !== "INPUT")
+            {
+                var input = document.getElementById("cart-scanner")
+                input.select()
+                input.value = e.key
+                e.preventDefault()
+                setTimeout(this.getCartInput, 200)
+            }
+        })
     },
 }
 </script>
+
+<style scoped>
+.navbar {
+    border-radius: 0px;
+}
+</style>
