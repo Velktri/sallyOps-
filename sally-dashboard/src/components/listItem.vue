@@ -1,8 +1,8 @@
 <template>
-    <div class="so-button">
+    <div class="so-button" @click="auditCart">
         <div class="level">
             <div class="level-left">
-                <CheckCircle class="so-icon-margin-right" :isAudited="false" />
+                <CheckCircle class="so-icon-margin-right" :isAudited="isAudited" />
                 <span>{{ cartData.cart }}</span>
             </div>
 
@@ -25,6 +25,12 @@ export default {
         cartData: {
             required: true,
             type: Object
+        },
+    },
+
+    computed: {
+        isAudited() {
+            return this.$store.state.audits[this.cartData.cart]
         }
     },
 
@@ -36,7 +42,13 @@ export default {
                 'Not Ready': 'is-light',
                 'Missing': 'is-danger',
                 'Sidelined': 'is-danger'
-            }
+            },
+        }
+    },
+
+    methods: {
+        auditCart() {
+            this.$store.commit('flipAuditState', this.cartData.cart)
         }
     },
 }

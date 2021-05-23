@@ -117,9 +117,7 @@ export default {
     data() {
         return {
             cartData: {},
-            sortedStageTimes: [],
-            auditedCarts: {},
-            activeWaveTab: 0,
+                activeWaveTab: 0,
             processed: false
         }
     },
@@ -191,11 +189,35 @@ export default {
 
                 this.sortedStageTimes = stageTimes
 
-                browser.storage.local.get('SO_audits').then((result) => {
-                    this.auditedCarts = result.SO_audits
-                    return Promise.resolve({ data: { carts: res.carts, times: stageTimes }})
+                return Promise.resolve(res.carts)
+            }).then(carts => {
+                return browser.storage.local.get('SO_audits').then((result) => {
+                    if (Object.keys(result.SO_audits).length === 0) {
+                        this.buildAuditList(carts)
+                    }
+                    else {
+                        this.$store.commit('setAuditState', result.SO_audits)
+                    }
+                    return Promise.resolve('test')
                 })
             })
+        },
+
+        buildAuditList(carts) {
+            let auditObj = {}
+            Object.keys(carts).forEach((waveTime, i) => {
+                Object.keys(carts[waveTime]).forEach(route => {
+                    carts[waveTime][route].carts.forEach(cart => {
+                        let temp = {}
+                        let uniqueCartName = /*(i + 1) + '|' + */cart.cart
+                        temp[uniqueCartName] = false
+                        auditObj = { ...temp, ...auditObj }
+                    })
+                })
+            })
+
+            browser.storage.local.set({ SO_audits: auditObj })
+            this.$store.commit('setAuditState', auditObj)
         },
 
         setRouteData(sallyLocation, i) {
@@ -254,13 +276,18 @@ export default {
         },
 
         updateCart(cartName, routeData) {
-            console.log(cartName)
-            console.log(routeData)
+            this.$store.commit('setAuditStateToTrue', cartName)
         },
+
+        updateCartData() {
+            // send message to bg script to pull cart table data
+            // listen for data
+            // call processCarts()
+        }
     },
 
     async created() {
-        this.processCartData().then(() => {
+        this.processCartData().then((res) => {
             this.processed = true
         })
 

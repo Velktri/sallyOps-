@@ -8,8 +8,8 @@
                     {{ routeData.route }}
                 </p>
 
-                <div class="so-button card-header-icon is-inverted" aria-label="more options">
-                    <CheckCircle :isAudited="false" />
+                <div class="so-button card-header-icon is-inverted" @click="auditRoute">
+                    <CheckCircle :isAudited="isAudited" />
                 </div>
             </header>
             <div class="card-content">
@@ -32,7 +32,7 @@ export default {
     props: {
         routeData: {
             type: Object
-        }
+        },
     },
 
     computed: {
@@ -41,7 +41,36 @@ export default {
                 return this.routeData.loc.split('.')[1]
             }
             return ''
+        },
+
+        /*isAudited() {
+            let isAudited = this.auditData[this.routeData.carts[0]]
+            this.routeData.carts.forEach(cart => {
+                if (this.auditData[cart.cart] !== undefined) {
+                    isAudited = isAudited && this.auditData[cart.cart]
+                }
+            })
+            
+            return isAudited
+        }*/
+    },
+
+    data() {
+        return {
+            isAudited: false
         }
+    },
+
+    methods: {
+        /*auditRoute() {
+            if (this.routeData.carts.length > 0) {
+                this.routeData.carts.forEach(cart => {
+                    if (this.auditData[cart.cart] !== undefined) {
+                        this.auditData[cart.cart] = true
+                    }
+                })
+            }
+        }*/
     },
 }
 </script>
