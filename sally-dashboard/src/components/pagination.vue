@@ -32,7 +32,7 @@ export default {
 
         clickButton(i) {
             this.selectedIndex = i
-            this.$emit('clicked', i)
+            this.$store.commit('setActiveWave', i - 1)
         }
     }
 }

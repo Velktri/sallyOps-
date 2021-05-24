@@ -4,7 +4,8 @@ import App from './App.vue'
 
 const store = createStore({
     state: {
-        audits: {}
+        audits: {},
+        activeWave: 0
     },
     mutations: {
         flipAuditState(state, cartName) {
@@ -21,6 +22,10 @@ const store = createStore({
 
         setAuditCartState(state, payload) {
             state.audits[payload.cart] = payload.auditState
+        },
+
+        setActiveWave(state, i) {
+            state.activeWave = i
         }
     }
 })

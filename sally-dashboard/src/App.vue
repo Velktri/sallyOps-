@@ -46,7 +46,7 @@
                 </div>
 
                 <div v-if="processed" class="navbar-item">
-                    <Pagination :waves="sortedStageTimes.length" @clicked="clickedPagination" />
+                    <Pagination :waves="sortedStageTimes.length" />
                 </div>
 
                 <div class="navbar-end">
@@ -117,23 +117,22 @@ export default {
     data() {
         return {
             cartData: {},
-                activeWaveTab: 0,
             processed: false
         }
     },
 
     computed: {
         routesInWave() {
-            return Object.keys(this.cartData[this.sortedStageTimes[this.activeWaveTab]]).length
+            return Object.keys(this.cartData[this.sortedStageTimes[this.$store.state.activeWave]]).length
         },
 
         stageByTime() {
-            let clock = this.sortedStageTimes[this.activeWaveTab].split(':')
+            let clock = this.sortedStageTimes[this.$store.state.activeWave].split(':')
             return parseInt(clock[0]) + ':' + clock[1]
         },
 
         departTime() {
-            let clock = this.sortedStageTimes[this.activeWaveTab].split(':')
+            let clock = this.sortedStageTimes[this.$store.state.activeWave].split(':')
             if ((parseInt(clock[1]) + 30) >= 60)
             {
                 return (parseInt(clock[0]) + 1) + ':' + (parseInt(clock[1]) - 30)
@@ -222,7 +221,7 @@ export default {
 
         setRouteData(sallyLocation, i) {
             i--
-            let waveData = this.cartData[this.sortedStageTimes[this.activeWaveTab]]
+            let waveData = this.cartData[this.sortedStageTimes[this.$store.state.activeWave]]
 
             let routesInPort = Object.keys(waveData).filter(route => {
                 let routeLoc = waveData[route].loc.split('.')
@@ -248,10 +247,6 @@ export default {
             return {}
         },
 
-        clickedPagination(i) {
-            this.activeWaveTab = (i - 1)
-        },
-
         getCartInput() {
             let cartVal = document.getElementById("cart-scanner")
             document.getElementById("scanned-cart").innerHTML = cartVal.value
@@ -263,7 +258,7 @@ export default {
         },
 
         checkForCart(cartName) {
-            let waveData = this.cartData[this.sortedStageTimes[this.activeWaveTab]]
+            let waveData = this.cartData[this.sortedStageTimes[this.$store.state.activeWave]]
             Object.keys(waveData).forEach(routeKey => {
                 waveData[routeKey].carts.forEach(element => {
                     if (cartName === element.cart)
