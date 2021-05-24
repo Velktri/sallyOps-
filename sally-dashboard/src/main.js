@@ -17,6 +17,10 @@ const store = createStore({
 
         setAuditStateToTrue(state, cartName) {
             state.audits[cartName] = true
+        },
+
+        setAuditCartState(state, payload) {
+            state.audits[payload.cart] = payload.auditState
         }
     }
 })

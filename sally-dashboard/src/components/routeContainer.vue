@@ -1,7 +1,7 @@
 <template>
     <div class="column">
         <div class="card">
-            <header class="card-header">
+            <header v-if="Object.keys(routeData).length > 0" class="card-header">
                 <p class="card-header-title">{{ splitLocation }}</p>
 
                 <p class="card-header-title so-title-font">
@@ -11,6 +11,13 @@
                 <div class="so-button card-header-icon is-inverted" @click="auditRoute">
                     <CheckCircle :isAudited="isAudited" />
                 </div>
+            </header>
+
+            
+            <header v-else class="card-header">
+                <p class="card-header-title so-title-font is-centered">
+                    Empty
+                </p>
             </header>
             <div class="card-content">
                 <ListItem v-for="cart in routeData.carts" :key="cart" :cartData="cart" />
@@ -43,35 +50,32 @@ export default {
             return ''
         },
 
-        /*isAudited() {
-            let isAudited = this.auditData[this.routeData.carts[0]]
+        isAudited() {
+            let isAudited = this.$store.state.audits[this.routeData.carts[0].cart]
             this.routeData.carts.forEach(cart => {
-                if (this.auditData[cart.cart] !== undefined) {
-                    isAudited = isAudited && this.auditData[cart.cart]
-                }
+                isAudited = isAudited && this.$store.state.audits[cart.cart]
             })
             
+
+            this.routeAuditState = isAudited
             return isAudited
-        }*/
+        }
     },
 
     data() {
         return {
-            isAudited: false
+            routeAuditState: false
         }
     },
 
     methods: {
-        /*auditRoute() {
-            if (this.routeData.carts.length > 0) {
-                this.routeData.carts.forEach(cart => {
-                    if (this.auditData[cart.cart] !== undefined) {
-                        this.auditData[cart.cart] = true
-                    }
-                })
-            }
-        }*/
-    },
+        auditRoute() {
+            this.routeAuditState = !this.routeAuditState
+            this.routeData.carts.forEach(cart => {
+                this.$store.commit('setAuditCartState', {cart: cart.cart, auditState: this.routeAuditState })
+            })
+        }
+    }
 }
 </script>
 

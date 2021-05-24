@@ -283,11 +283,12 @@ export default {
             // send message to bg script to pull cart table data
             // listen for data
             // call processCarts()
+            console.log('hello')
         }
     },
 
     async created() {
-        this.processCartData().then((res) => {
+        this.processCartData().then(() => {
             this.processed = true
         })
 
