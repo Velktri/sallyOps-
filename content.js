@@ -24,8 +24,7 @@ function readTable()
 
         if (!found)
         {
-            let temp = {}
-            temp[rowData.route] = { loc: rowData.loc, carts: [rowData.carts] }
+            let temp = {[rowData.route]: { loc: rowData.loc, carts: [rowData.carts] }}
             waveData[rowData.stageTime] = { ...waveData[rowData.stageTime], ...temp }
         }
     }

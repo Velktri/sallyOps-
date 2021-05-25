@@ -8,17 +8,43 @@ function handleRemoved(tabID, info)
     })
 }
 
-function handleCartAudit(request, sender, sendResponse)
+function handleCartUpdate(request, sender, sendResponse)
 {
-    if (request.command === 'SO_cart_audit')
+    if (request.command === 'SO_update_carts')
     {
-        console.log(request)
-        browser.storage.local.set({ SO_audits: request.auditedCarts })
+        browser.tabs.query({
+            url: ["*://logistics.amazon.com/station/dashboard/stage",
+                  "https://velktri.github.io/sallyOps-/testing/*"
+            ]
+        })
+        .then(getTableData)
+        .then((res) => {
+            console.log(res)
+            sendResponse({ response: res })
+        })
     }
+}
+
+function getTableData(tabs)
+{
+    /* Fix problem where promise dont exist after foreach loop ends */
+    tabs.forEach(tab => {
+        browser.tabs.sendMessage(tab.id, { command: "SO_getTableData" }).then(response => {
+            console.log('hi from getTableData')
+            return storeCartData(response.data)
+        })
+    })
+}
+
+function storeCartData(cartData)
+{
+    browser.storage.local.set({ carts: cartData })
+    console.log('hi from storecartdata')
+    return Promise.resolve(cartData)
 }
 
 browser.storage.local.set({ SO_audits: {} })
 
 browser.tabs.onRemoved.addListener(handleRemoved)
-browser.runtime.onMessage.addListener(handleCartAudit)
+browser.runtime.onMessage.addListener(handleCartUpdate)
 

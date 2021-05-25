@@ -318,6 +318,8 @@ export default {
             }).then((res) => {
                 console.log(res)
             })
+
+            
             // send message to bg script to pull cart table data
             // listen for data
             // call processCarts()
