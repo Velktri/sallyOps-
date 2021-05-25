@@ -17,6 +17,8 @@ function handleCartUpdate(request, sender, sendResponse)
                   "https://velktri.github.io/sallyOps-/testing/*"
             ]
         })
+        // then() reloadtab (https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/reload)
+        // then() wait for table to load
         .then(getTableData)
         .then((res) => {
             console.log(res)
