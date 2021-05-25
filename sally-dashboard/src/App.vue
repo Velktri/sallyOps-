@@ -86,16 +86,16 @@
                 <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('A', i)" />
             </div>
             <div class="columns tab-spacing">
-                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('B', i)" />
+                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('B', i + 4)" />
             </div>
             <div class="columns tab-spacing">
-                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('C', i)" />
+                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('C', i + 8)" />
             </div>
             <div class="columns tab-spacing">
-                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('D', i)" />
+                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('D', i + 12)" />
             </div>
             <div class="columns tab-spacing">
-                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('E', i)" />
+                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('E', i + 16)" />
             </div>
         </div>
 
@@ -192,7 +192,7 @@ export default {
             }).then(carts => {
                 return browser.storage.local.get('SO_audits').then((result) => {
                     if (Object.keys(result.SO_audits).length === 0) {
-                        this.buildAuditList(carts)
+                        this.buildAuditList(this.sortedStageTimes, carts)
                     }
                     else {
                         this.$store.commit('setAuditState', result.SO_audits)
@@ -202,15 +202,13 @@ export default {
             })
         },
 
-        buildAuditList(carts) {
+        buildAuditList(sortedWaveTimes, carts) {
             let auditObj = {}
-            Object.keys(carts).forEach((waveTime, i) => {
+            sortedWaveTimes.forEach((waveTime, i) => {
                 Object.keys(carts[waveTime]).forEach(route => {
                     carts[waveTime][route].carts.forEach(cart => {
-                        let temp = {}
-                        let uniqueCartName = /*(i + 1) + '|' + */cart.cart
-                        temp[uniqueCartName] = false
-                        auditObj = { ...temp, ...auditObj }
+                        let uniqueCartName = i + '|' + cart.cart
+                        auditObj = { ...{ [uniqueCartName]: false }, ...auditObj }
                     })
                 })
             })
@@ -223,7 +221,47 @@ export default {
             i--
             let waveData = this.cartData[this.sortedStageTimes[this.$store.state.activeWave]]
 
-            let routesInPort = Object.keys(waveData).filter(route => {
+            let routesWithLoc = Object.keys(waveData).filter(route => {
+                let routeLoc = waveData[route].loc.split('.')
+                return routeLoc[0] === 'STG'
+            })
+
+            routesWithLoc.sort((x, y) => {
+                let xLetter = waveData[x].loc.split('.')[1].charAt(0)
+                let yLetter = waveData[y].loc.split('.')[1].charAt(0)
+
+                if (xLetter < yLetter) {
+                    return -1
+                }
+
+                if (xLetter > yLetter) {
+                    return 1
+                }
+
+                if (xLetter === yLetter) {
+                    let xLoc = parseInt(waveData[x].loc.split('.')[1].slice(1))
+                    let yLoc = parseInt(waveData[y].loc.split('.')[1].slice(1))
+
+                    if (xLoc < yLoc) {
+                        return -1
+                    }
+
+                    if (xLoc > yLoc) {
+                        return 1
+                    }
+                }
+
+                return 0
+            })
+
+            if (waveData[routesWithLoc[i]] !== undefined)
+            {
+                return { 'route': routesWithLoc[i], ...waveData[routesWithLoc[i]] }
+            }
+
+            return {}
+
+            /*let routesInPort = Object.keys(waveData).filter(route => {
                 let routeLoc = waveData[route].loc.split('.')
 
                 return routeLoc[0] === 'STG' && routeLoc[1].charAt(0) === sallyLocation
@@ -244,7 +282,7 @@ export default {
                 return { 'route': routesInPort[i], ...waveData[routesInPort[i]] }
             }
 
-            return {}
+            return {}*/
         },
 
         getCartInput() {
@@ -270,15 +308,19 @@ export default {
             })
         },
 
-        updateCart(cartName, routeData) {
+        updateCart(cartName) {
             this.$store.commit('setAuditStateToTrue', cartName)
         },
 
         updateCartData() {
+            browser.runtime.sendMessage({
+                command: 'SO_update_carts',
+            }).then((res) => {
+                console.log(res)
+            })
             // send message to bg script to pull cart table data
             // listen for data
             // call processCarts()
-            console.log('hello')
         }
     },
 

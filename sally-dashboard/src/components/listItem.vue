@@ -30,7 +30,7 @@ export default {
 
     computed: {
         isAudited() {
-            return this.$store.state.audits[this.cartData.cart]
+            return this.$store.getters.getAuditByCartName(this.cartData.cart)
         }
     },
 

@@ -51,9 +51,9 @@ export default {
         },
 
         isAudited() {
-            let isAudited = this.$store.state.audits[this.routeData.carts[0].cart]
+            let isAudited = this.$store.getters.getAuditByCartName(this.routeData.carts[0].cart)
             this.routeData.carts.forEach(cart => {
-                isAudited = isAudited && this.$store.state.audits[cart.cart]
+                isAudited = isAudited && this.$store.getters.getAuditByCartName(cart.cart)
             })
             
 
