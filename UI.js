@@ -5,7 +5,9 @@ function onError(error)
 
 function storeCartData(cartData)
 {
-    browser.storage.local.set({ carts: cartData })
+    browser.storage.local.set({ carts: {} }).then(
+        browser.storage.local.set({ carts: cartData })
+    )
 }
 
 function getTableData(tabs)
