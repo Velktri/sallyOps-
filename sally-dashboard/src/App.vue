@@ -46,7 +46,7 @@
                 </div>
 
                 <div v-if="processed" class="navbar-item">
-                    <Pagination :waves="sortedStageTimes.length" />
+                    <Pagination :waves="$store.state.sortedStageTimes.length" />
                 </div>
 
                 <div class="navbar-end">
@@ -54,7 +54,7 @@
                         Add clock for auto update
                     </div>
                     <div class="navbar-item">
-                        <button class="button is-link" @click="updateCartData()">
+                        <button class="button is-link" :class="isLoading()" @click="updateCartData()">
                             <strong>Update Now</strong>
                         </button>
                     </div>
@@ -82,20 +82,8 @@
         </div>
 
         <div v-if="processed" class="container is-fluid tabcontent">
-            <div class="columns tab-spacing">
-                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('A', i)" />
-            </div>
-            <div class="columns tab-spacing">
-                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('B', i + 4)" />
-            </div>
-            <div class="columns tab-spacing">
-                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('C', i + 8)" />
-            </div>
-            <div class="columns tab-spacing">
-                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('D', i + 12)" />
-            </div>
-            <div class="columns tab-spacing">
-                <RouteContainer v-for="i in 4" :key="i" :routeData="setRouteData('E', i + 16)" />
+            <div v-for="i in 5" :key="i" class="columns tab-spacing">
+                <RouteContainer v-for="j in 4" :key="j" :routeData="setRouteData(j + ((i - 1) * 4))" />
             </div>
         </div>
 
@@ -116,40 +104,56 @@ export default {
 
     data() {
         return {
-            cartData: {},
-            processed: false
+            processed: false,
+            gettingData: false
         }
     },
 
     computed: {
         routesInWave() {
-            return Object.keys(this.cartData[this.sortedStageTimes[this.$store.state.activeWave]]).length
+            if (this.$store.getters.getWaveData !== undefined) {
+                return Object.keys(this.$store.getters.getWaveData).length
+            }
+
+            return 0
         },
 
         stageByTime() {
-            let clock = this.sortedStageTimes[this.$store.state.activeWave].split(':')
-            return parseInt(clock[0]) + ':' + clock[1]
+            if (this.$store.getters.getActiveStageTime !== undefined) {
+                let clock = this.$store.getters.getActiveStageTime.split(':')
+                return parseInt(clock[0]) + ':' + clock[1]
+            }
+
+            return '0:00'
         },
 
         departTime() {
-            let clock = this.sortedStageTimes[this.$store.state.activeWave].split(':')
-            if ((parseInt(clock[1]) + 30) >= 60)
-            {
-                return (parseInt(clock[0]) + 1) + ':' + (parseInt(clock[1]) - 30)
+            if (this.$store.getters.getActiveStageTime !== undefined) {
+                let clock = this.$store.getters.getActiveStageTime.split(':')
+                if ((parseInt(clock[1]) + 30) >= 60)
+                {
+                    return (parseInt(clock[0]) + 1) + ':' + (parseInt(clock[1]) - 30)
+                }
+                else
+                {
+                    return parseInt(clock[0]) + ':' + (parseInt(clock[1]) + 30)
+                }
             }
-            else
-            {
-                return parseInt(clock[0]) + ':' + (parseInt(clock[1]) + 30)
-            }
+
+            return '0:00'
         }
     },
 
     methods: {
+        isLoading(i) {
+            return {
+                'is-loading': this.gettingData
+            }
+        },
+
         processCartData() {
             return browser.storage.local.get('carts').then((res) => {
-                this.cartData = res.carts
-                let stageTimes = []
-                stageTimes = Object.keys(this.cartData).sort((x, y) => {
+                let sortedStageTimes = Object.keys(res.carts).sort((x, y) => {
                     let xTime = x.split(':')
                     let yTime = y.split(':')
 
@@ -185,104 +189,59 @@ export default {
 
                     return 0
                 })
+                
+                this.$store.commit('setSortedStageTimes', {stageTimes: sortedStageTimes })
+                this.$store.commit('importAuditData', { cartData: res.carts })
 
-                this.sortedStageTimes = stageTimes
-
-                return Promise.resolve(res.carts)
-            }).then(carts => {
-                return browser.storage.local.get('SO_audits').then((result) => {
-                    if (Object.keys(result.SO_audits).length === 0) {
-                        this.buildAuditList(this.sortedStageTimes, carts)
-                    }
-                    else {
-                        this.$store.commit('setAuditState', result.SO_audits)
-                    }
-                    return Promise.resolve('test')
-                })
+                return Promise.resolve()
             })
         },
 
-        buildAuditList(sortedWaveTimes, carts) {
-            let auditObj = {}
-            sortedWaveTimes.forEach((waveTime, i) => {
-                Object.keys(carts[waveTime]).forEach(route => {
-                    carts[waveTime][route].carts.forEach(cart => {
-                        let uniqueCartName = i + '|' + cart.cart
-                        auditObj = { ...{ [uniqueCartName]: false }, ...auditObj }
-                    })
+        setRouteData(i) {
+            let waveData = this.$store.getters.getWaveData
+
+            if (waveData !== undefined) {
+                i--
+                let routesWithLoc = Object.keys(waveData).filter(route => {
+                    let routeLoc = waveData[route].loc.split('.')
+                    return routeLoc[0] === 'STG'
                 })
-            })
 
-            browser.storage.local.set({ SO_audits: auditObj })
-            this.$store.commit('setAuditState', auditObj)
-        },
+                routesWithLoc.sort((x, y) => {
+                    let xLetter = waveData[x].loc.split('.')[1].charAt(0)
+                    let yLetter = waveData[y].loc.split('.')[1].charAt(0)
 
-        setRouteData(sallyLocation, i) {
-            i--
-            let waveData = this.cartData[this.sortedStageTimes[this.$store.state.activeWave]]
-
-            let routesWithLoc = Object.keys(waveData).filter(route => {
-                let routeLoc = waveData[route].loc.split('.')
-                return routeLoc[0] === 'STG'
-            })
-
-            routesWithLoc.sort((x, y) => {
-                let xLetter = waveData[x].loc.split('.')[1].charAt(0)
-                let yLetter = waveData[y].loc.split('.')[1].charAt(0)
-
-                if (xLetter < yLetter) {
-                    return -1
-                }
-
-                if (xLetter > yLetter) {
-                    return 1
-                }
-
-                if (xLetter === yLetter) {
-                    let xLoc = parseInt(waveData[x].loc.split('.')[1].slice(1))
-                    let yLoc = parseInt(waveData[y].loc.split('.')[1].slice(1))
-
-                    if (xLoc < yLoc) {
+                    if (xLetter < yLetter) {
                         return -1
                     }
 
-                    if (xLoc > yLoc) {
+                    if (xLetter > yLetter) {
                         return 1
                     }
+
+                    if (xLetter === yLetter) {
+                        let xLoc = parseInt(waveData[x].loc.split('.')[1].slice(1))
+                        let yLoc = parseInt(waveData[y].loc.split('.')[1].slice(1))
+
+                        if (xLoc < yLoc) {
+                            return -1
+                        }
+
+                        if (xLoc > yLoc) {
+                            return 1
+                        }
+                    }
+
+                    return 0
+                })
+
+                if (waveData[routesWithLoc[i]] !== undefined)
+                {
+                    return { 'route': routesWithLoc[i], ...waveData[routesWithLoc[i]] }
                 }
-
-                return 0
-            })
-
-            if (waveData[routesWithLoc[i]] !== undefined)
-            {
-                return { 'route': routesWithLoc[i], ...waveData[routesWithLoc[i]] }
             }
 
             return {}
-
-            /*let routesInPort = Object.keys(waveData).filter(route => {
-                let routeLoc = waveData[route].loc.split('.')
-
-                return routeLoc[0] === 'STG' && routeLoc[1].charAt(0) === sallyLocation
-            })
-
-            routesInPort.sort((x, y) => {
-                let x_Loc = parseInt(waveData[x].loc.split('.')[1].slice(1))
-                let y_Loc = parseInt(waveData[y].loc.split('.')[1].slice(1))
-                
-                if (x_Loc < y_Loc) { return -1 }
-                if (x_Loc > y_Loc) { return 1 }
-
-                return 0
-            })
-
-            if (waveData[routesInPort[i]] !== undefined)
-            {
-                return { 'route': routesInPort[i], ...waveData[routesInPort[i]] }
-            }
-
-            return {}*/
         },
 
         getCartInput() {
@@ -296,27 +255,24 @@ export default {
         },
 
         checkForCart(cartName) {
-            let waveData = this.cartData[this.sortedStageTimes[this.$store.state.activeWave]]
+            let waveData = this.$store.getters.getWaveData
             Object.keys(waveData).forEach(routeKey => {
                 waveData[routeKey].carts.forEach(element => {
                     if (cartName === element.cart)
                     {
-                        this.updateCart(cartName, waveData[routeKey])
+                        element.isAudited = true
+                        this.$store.commit('exportAuditData')
                         return
                     }
                 })
             })
         },
 
-        updateCart(cartName) {
-            this.$store.commit('setAuditStateToTrue', cartName)
-        },
-
         updateCartData() {
+            
+            this.gettingData = true
             browser.runtime.sendMessage({
-                command: 'SO_update_carts',
-            }).then((res) => {
-                console.log(res)
+                command: 'SO_reload_content',
             })
 
             
@@ -341,6 +297,13 @@ export default {
                 setTimeout(this.getCartInput, 200)
             }
         })
+
+        browser.runtime.onMessage.addListener((res) => {
+            if (res.command === 'SO_carts_updated') {
+                this.processCartData()
+                this.gettingData = false
+            }
+        })
     },
 }
 </script>
@@ -348,5 +311,26 @@ export default {
 <style scoped>
 .navbar {
     border-radius: 0px;
+}
+
+.scanner {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: -1;
+    max-width: 1px;
+    max-height: 1px;
+    opacity: 0%;
+}
+
+.tabcontent {
+    padding: 6px 12px;
+    border-top: none;
+}
+
+.overview {
+    height: 120px;
+    border-bottom: 1px solid black;
+    padding: 10px 20px;
 }
 </style>

@@ -4,35 +4,32 @@ import App from './App.vue'
 
 const store = createStore({
     state: {
-        audits: {},
+        cartData: {},
+        sortedStageTimes: [],
         activeWave: 0
     },
 
     getters: {
-        getAuditByCartName: (state) => (cartName) => {
-            return state.audits[state.activeWave + '|' + cartName]
+        getWaveData: state => {
+            return state.cartData[state.sortedStageTimes[state.activeWave]]
+        },
+
+        getActiveStageTime: state => {
+            return state.sortedStageTimes[state.activeWave]
         }
     },
 
     mutations: {
-        flipAuditState(state, cartName) {
-            state.audits[encryptCart(state.activeWave, cartName)] = !state.audits[encryptCart(state.activeWave, cartName)]
-            browser.storage.local.set({ SO_audits: { ...state.audits } })
+        importAuditData(state, payload) {
+            state.cartData = payload.cartData
         },
 
-        setAuditState(state, auditData) {
-            state.audits = auditData
-            browser.storage.local.set({ SO_audits: { ...state.audits } })
+        setSortedStageTimes(state, payload) {
+            state.sortedStageTimes = payload.stageTimes
         },
 
-        setAuditStateToTrue(state, cartName) {
-            state.audits[encryptCart(state.activeWave, cartName)] = true
-            browser.storage.local.set({ SO_audits: { ...state.audits } })
-        },
-
-        setAuditCartState(state, payload) {
-            state.audits[encryptCart(state.activeWave, payload.cart)] = payload.auditState
-            browser.storage.local.set({ SO_audits: { ...state.audits } })
+        exportAuditData(state) {
+            browser.storage.local.set({ carts: JSON.parse(JSON.stringify(state.cartData)) })
         },
 
         setActiveWave(state, i) {
@@ -40,9 +37,5 @@ const store = createStore({
         }
     }
 })
-
-function encryptCart(i, cart) {
-    return i + '|' + cart
-}
 
 createApp(App).use(store).mount('#app')

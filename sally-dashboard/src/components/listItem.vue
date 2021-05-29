@@ -2,7 +2,7 @@
     <div class="so-button" @click="auditCart">
         <div class="level">
             <div class="level-left">
-                <CheckCircle class="so-icon-margin-right" :isAudited="isAudited" />
+                <CheckCircle class="so-icon-margin-right" :isAudited="cartData.isAudited" />
                 <span>{{ cartData.cart }}</span>
             </div>
 
@@ -28,12 +28,6 @@ export default {
         },
     },
 
-    computed: {
-        isAudited() {
-            return this.$store.getters.getAuditByCartName(this.cartData.cart)
-        }
-    },
-
     data() {
         return {
             statusMap: {
@@ -48,7 +42,8 @@ export default {
 
     methods: {
         auditCart() {
-            this.$store.commit('flipAuditState', this.cartData.cart)
+            this.cartData.isAudited = !this.cartData.isAudited
+            this.$store.commit('exportAuditData')
         }
     },
 }
@@ -57,5 +52,24 @@ export default {
 <style scoped>
 .so-icon-margin-right {
     margin-right: .75em;
+}
+
+.so-button {
+    border-radius: .4em;
+    border: 1px solid transparent;
+    padding-bottom: calc(.35em - 1px);
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-top: calc(.35em - 1px);
+    cursor: pointer;
+    user-select:none;
+}
+
+.so-button:hover {
+    background-color: #3a4344;
+}
+
+.so-button:active {
+    border-color: #282f2f;
 }
 </style>

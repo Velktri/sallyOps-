@@ -51,9 +51,9 @@ export default {
         },
 
         isAudited() {
-            let isAudited = this.$store.getters.getAuditByCartName(this.routeData.carts[0].cart)
+            let isAudited = this.routeData.carts[0].cart
             this.routeData.carts.forEach(cart => {
-                isAudited = isAudited && this.$store.getters.getAuditByCartName(cart.cart)
+                isAudited = isAudited && cart.isAudited
             })
             
 
@@ -72,8 +72,10 @@ export default {
         auditRoute() {
             this.routeAuditState = !this.routeAuditState
             this.routeData.carts.forEach(cart => {
-                this.$store.commit('setAuditCartState', {cart: cart.cart, auditState: this.routeAuditState })
+                cart.isAudited = this.routeAuditState
             })
+
+            this.$store.commit('exportAuditData')
         }
     }
 }
@@ -88,7 +90,34 @@ export default {
     padding: .5rem 1rem;
 }
 
+.card-content {
+    padding: .5rem !important;
+}
+
+.card {
+    height: 100%;
+}
+
 .so-title-font {
     font-size: 145%;
+}
+
+.so-button {
+    border-radius: .4em;
+    border: 1px solid transparent;
+    padding-bottom: calc(.35em - 1px);
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-top: calc(.35em - 1px);
+    cursor: pointer;
+    user-select:none;
+}
+
+.so-button:hover {
+    background-color: #3a4344;
+}
+
+.so-button:active {
+    border-color: #282f2f;
 }
 </style>

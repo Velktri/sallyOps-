@@ -16,3 +16,9 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.so-icon-large {
+    font-size: 24px;
+}
+</style>

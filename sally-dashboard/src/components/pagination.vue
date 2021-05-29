@@ -2,7 +2,7 @@
     <nav class="pagination is-centered" role="navigation" aria-label="pagination">
         <ul class="pagination-list">
             <li v-for="i in waves" :key="i">
-                <a class="pagination-link" :class="isSelected(i)" @click="clickButton(i)">{{ i }}</a>
+                <a class="pagination-link" :class="isSelected(i)" @click="clickButton(i)">{{ i - 1 }}</a>
             </li>
         </ul>
     </nav>
