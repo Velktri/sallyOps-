@@ -102,7 +102,7 @@ function clickNextPage()
     }
 }
 
-function compileData()
+function compileData(observer)
 {
     resetToFirstPage()
     readTable()
@@ -110,33 +110,30 @@ function compileData()
 
     let data = waveData
     waveData = {}
+    observer.disconnect()
     return data
 }
 
-function callback()
+function callback(mutations, observer)
 {
-    //console.log('dom changed')
-    browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData() })
+    console.log(mutations)
+    console.log('dom changed')
+    setTimeout(function() {
+        browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData(observer) })
+    }, 500)
 }
 
-const observer = new MutationObserver(callback)
-observer.observe(document.getElementsByTagName('table')[0], { attributes: true, childList: true, subtree: true })
-
-
-/*function tempFunc()
+if (window.location.hash === '#/stage')
 {
-    let table = document.getElementsByTagName('table')[0].children[1]
-    let row = document.createElement('tr')
-    table.appendChild(row)
-    console.log('added child row')
+    console.log("Content script is loaded.")
+    
+    browser.runtime.onMessage.addListener((message) => {
+        if (message.command === "SO_getTableData")
+        {
+            return Promise.resolve({ data: compileData() })
+        }
+    })
+
+    const observer = new MutationObserver(callback)
+    observer.observe(document, { attributes: true, childList: true, subtree: true })
 }
-
-setTimeout(function() { tempFunc() }, 10000)*/
-console.log("Content script is loaded.")
-
-browser.runtime.onMessage.addListener((message) => {
-    if (message.command === "SO_getTableData")
-    {
-        return Promise.resolve({ data: compileData() })
-    }
-})
