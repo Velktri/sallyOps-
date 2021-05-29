@@ -31,7 +31,6 @@ function handleMessages(request, sender, sendResponse)
 
 function getTableData(tab)
 {
-    /* Fix problem where promise dont exist after foreach loop ends */
     browser.tabs.sendMessage(tab.id, { command: "SO_getTableData" }).then(response => {
         storeCartData(response.data)
     })
@@ -46,6 +45,7 @@ function mergeCartData(newData)
 
         console.log(newData)
         console.log(oldData)
+        console.log('\n')
         let updatedData = {}
         Object.keys(newData).forEach(newWaveTime => {
             Object.keys(oldData).forEach(oldWaveTime => {
@@ -64,18 +64,28 @@ function mergeCartData(newData)
                                     })
                                 })
 
+                                console.log(updatedData[oldWaveTime])
+                                console.log(newData[newWaveTime][newRoute])
+
+
+                                updatedData = { ...updatedData, ...{[newWaveTime]: newData[newWaveTime] }}
+
                                 updatedData[newWaveTime][newRoute] = newData[newWaveTime][newRoute]
+
+                                console.log(updatedData)
+                                console.log('\n')
                             }
                             else
                             {
-                                updatedData = { ...oldData[oldWaveTime], ...{ [newRoute]: newData[newWaveTime][newRoute] } }
+
+                                updatedData[newWaveTime] = { ...updatedData[newWaveTime], ...{ [newRoute]: newData[newWaveTime][newRoute] } }
                             }
                         })
                     })
                 }
                 else
                 {
-                    updatedData = { ...newData, ...oldData }
+                    updatedData = { ...oldData, ...newData }
                 }
             })
         })
@@ -106,7 +116,7 @@ function handleBrowserActionClick() {
 
         if (tabs.length === 0)
         {
-            browser.tabs.create({ url: 'https://velktri.github.io/sallyOps-/testing/new-routes.html' })
+            browser.tabs.create({ url: 'https://logistics.amazon.com/station/dashboard/stage' }) //https://velktri.github.io/sallyOps-/testing/new-routes.html' })
         }
         else
         {
@@ -124,8 +134,8 @@ function handleBrowserActionClick() {
         }
         else
         {
-            browser.storage.local.get("SO_UI").then((res) => {
-                browser.tabs.update(res.SO_UI, { active: true })
+            browser.storage.local.get("SO_UI").then((res2) => {
+                browser.tabs.update(res2.SO_UI, { active: true })
             })
         }
     })

@@ -115,7 +115,7 @@ function compileData()
 
 function callback()
 {
-    console.log('dom changed')
+    //console.log('dom changed')
     browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData() })
 }
 
@@ -123,7 +123,7 @@ const observer = new MutationObserver(callback)
 observer.observe(document.getElementsByTagName('table')[0], { attributes: true, childList: true, subtree: true })
 
 
-function tempFunc()
+/*function tempFunc()
 {
     let table = document.getElementsByTagName('table')[0].children[1]
     let row = document.createElement('tr')
@@ -131,7 +131,7 @@ function tempFunc()
     console.log('added child row')
 }
 
-setTimeout(function() { tempFunc() }, 3000)
+setTimeout(function() { tempFunc() }, 10000)*/
 console.log("Content script is loaded.")
 
 browser.runtime.onMessage.addListener((message) => {

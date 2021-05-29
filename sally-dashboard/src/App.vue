@@ -274,11 +274,6 @@ export default {
             browser.runtime.sendMessage({
                 command: 'SO_reload_content',
             })
-
-            
-            // send message to bg script to pull cart table data
-            // listen for data
-            // call processCarts()
         }
     },
 
