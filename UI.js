@@ -10,27 +10,17 @@ function storeCartData(cartData)
     )
 }
 
-function getTableData(tabs)
+function getTableData(tab)
 {
-    tabs.forEach(tab => {
+    //tabs.forEach(tab => {
         browser.tabs.sendMessage(tab.id, { command: "SO_getTableData" }).then(response => {
             storeCartData(response.data)
         }).catch(onError)
-    })
+    //})
 }
 
 
 
-
-
-// Button Behavior
-document.getElementById("getTableButton").onclick = () => {
-    browser.tabs.query({
-        url: ["*://logistics.amazon.com/station/dashboard/stage",
-              "https://velktri.github.io/sallyOps-/testing/*"
-        ]
-    }).then(getTableData).catch(onError)
-}
 
 document.getElementById("print").onclick = () => {
     browser.storage.local.get('carts').then((response) => {
@@ -43,22 +33,10 @@ document.getElementById("print").onclick = () => {
             console.log('No Carts')
         }
     })
-
-    browser.storage.local.get('SO_audits').then((result) => {
-        if (result.SO_audits != undefined)
-        {
-            console.log(result.SO_audits)
-        }
-        else
-        {
-            console.log('No Audits')
-        }
-    })
 }
 
 document.getElementById("clear").onclick = () => {
     browser.storage.local.clear()
-    browser.storage.local.set({ SO_audits: {} })
 }
 
 /* Creates the command tab and updates the tab id in storage */
@@ -72,11 +50,27 @@ document.getElementById("cartUI").onclick = () => {
         }
         else
         {
-            console.log('hello')
             browser.storage.local.get("SO_UI").then((res) => {
-                console.log(res.SO_UI)
                 browser.tabs.update(res.SO_UI, { active: true })
             })
         }
     })
+}
+
+document.getElementById('test').onclick = () => {
+    browser.tabs.query({
+        url: ["*://logistics.amazon.com/station/dashboard/stage",
+              "https://velktri.github.io/sallyOps-/testing/*"
+        ]
+    }).then(tabs => {
+
+        if (tabs.length === 0)
+        {
+            browser.tabs.create({ url: 'https://velktri.github.io/sallyOps-/testing/new-routes.html' })
+        }
+        else
+        {
+            getTableData(tabs[0])
+        }
+    }).catch(onError)
 }

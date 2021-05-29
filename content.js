@@ -2,34 +2,35 @@ let waveData = {}
 // read page data from table
 function readTable() 
 {
-    let table = document.getElementsByTagName('table')[0]
+    let table = document.getElementsByTagName('table')[0].children[1]
     let rows = table.getElementsByTagName('tr')
 
-    for (i = 2; i < rows.length; i++)
+    for (let i = 1; i < rows.length; i++)
     {
-        let rowData = extractRowData(rows[i])
-        if (waveData[rowData.stageTime] === undefined)
+        if (rows[i].childNodes.length !== 0) 
         {
-            waveData[rowData.stageTime] = {}
-        }
-
-        let waveRoutes = waveData[rowData.stageTime]
-
-        let found = false
-        if (waveRoutes[rowData.route] !== undefined)
-        {
-            waveRoutes[rowData.route].carts.push(rowData.carts)
-            found = true
-        }
-
-        if (!found)
-        {
-            let temp = {[rowData.route]: { loc: rowData.loc, carts: [rowData.carts] }}
-            waveData[rowData.stageTime] = { ...waveData[rowData.stageTime], ...temp }
+            let rowData = extractRowData(rows[i])
+            if (waveData[rowData.stageTime] === undefined)
+            {
+                waveData[rowData.stageTime] = {}
+            }
+    
+            let waveRoutes = waveData[rowData.stageTime]
+    
+            let found = false
+            if (waveRoutes[rowData.route] !== undefined)
+            {
+                waveRoutes[rowData.route].carts.push(rowData.carts)
+                found = true
+            }
+    
+            if (!found)
+            {
+                let temp = {[rowData.route]: { loc: rowData.loc, carts: [rowData.carts] }}
+                waveData[rowData.stageTime] = { ...waveData[rowData.stageTime], ...temp }
+            }
         }
     }
-
-    // ignore parsing waves after depart time or when wave is checked as completed
 }
 
 function extractRowData(rowData)
@@ -49,7 +50,7 @@ function extractRowData(rowData)
         status = "Not Ready"
     }
 
-    return { route, loc, stageTime, 'carts': { cart, status, dwellTime, stager }}
+    return { route, loc, stageTime, 'carts': { cart, status, dwellTime, stager, isAudited: false }}
 }
 
 function getNextButton()
@@ -101,17 +102,41 @@ function clickNextPage()
     }
 }
 
+function compileData()
+{
+    resetToFirstPage()
+    readTable()
+    clickNextPage()
+
+    let data = waveData
+    waveData = {}
+    return data
+}
+
+function callback()
+{
+    console.log('dom changed')
+    browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData() })
+}
+
+const observer = new MutationObserver(callback)
+observer.observe(document.getElementsByTagName('table')[0], { attributes: true, childList: true, subtree: true })
+
+
+function tempFunc()
+{
+    let table = document.getElementsByTagName('table')[0].children[1]
+    let row = document.createElement('tr')
+    table.appendChild(row)
+    console.log('added child row')
+}
+
+setTimeout(function() { tempFunc() }, 3000)
 console.log("Content script is loaded.")
 
 browser.runtime.onMessage.addListener((message) => {
     if (message.command === "SO_getTableData")
     {
-        resetToFirstPage()
-        readTable()
-        clickNextPage()
-
-        let data = waveData
-        waveData = {}
-        return Promise.resolve({ data })
+        return Promise.resolve({ data: compileData() })
     }
 })
