@@ -104,23 +104,26 @@ function clickNextPage()
 
 function compileData(observer)
 {
+    if (observer !== undefined) { observer.disconnect() }
     resetToFirstPage()
     readTable()
     clickNextPage()
 
     let data = waveData
     waveData = {}
-    observer.disconnect()
     return data
 }
 
 function callback(mutations, observer)
 {
-    console.log(mutations)
+    console.log(mutations[0].target.tagName)
     console.log('dom changed')
-    setTimeout(function() {
-        browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData(observer) })
-    }, 500)
+    if (mutations[0].target.tagName === 'TBODY')
+    {
+        setTimeout(function() {
+            browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData(observer) })
+        }, 500)
+    }
 }
 
 if (window.location.hash === '#/stage')
