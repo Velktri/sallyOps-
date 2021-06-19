@@ -43,9 +43,6 @@ function mergeCartData(newData)
         if (Object.keys(oldData).length === 0) { return Promise.resolve(newData) }
         if (Object.keys(newData).length === 0) { return Promise.resolve(oldData) }
 
-        //console.log(newData)
-        //console.log(oldData)
-        //console.log('\n')
         let updatedData = {}
         Object.keys(newData).forEach(newWaveTime => {
             Object.keys(oldData).forEach(oldWaveTime => {
@@ -63,21 +60,11 @@ function mergeCartData(newData)
                                         }
                                     })
                                 })
-
-                                //console.log(updatedData[oldWaveTime])
-                                //console.log(newData[newWaveTime][newRoute])
-
-
                                 updatedData = { ...updatedData, ...{[newWaveTime]: newData[newWaveTime] }}
-
                                 updatedData[newWaveTime][newRoute] = newData[newWaveTime][newRoute]
-
-                                //console.log(updatedData)
-                                //console.log('\n')
                             }
                             else
                             {
-
                                 updatedData[newWaveTime] = { ...updatedData[newWaveTime], ...{ [newRoute]: newData[newWaveTime][newRoute] } }
                             }
                         })
@@ -89,9 +76,6 @@ function mergeCartData(newData)
                 }
             })
         })
-
-        //console.log(updatedData)
-
         return Promise.resolve(updatedData)
     })
 }
@@ -148,4 +132,3 @@ browser.browserAction.onClicked.addListener(handleBrowserActionClick)
 
 browser.storage.local.set({ SO_UI: browser.tabs.TAB_ID_NONE })
 browser.storage.local.set({ carts: {} })
-
