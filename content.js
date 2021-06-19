@@ -39,7 +39,7 @@ function extractRowData(rowData)
 
     let cart = children[0].children[0].innerHTML
     let route = children[1].children[0].textContent
-    let stageTime = children[2].children[0].innerHTML
+    let stageTime = alignStageTime(children[2].children[0].innerHTML)
     let loc = children[3].children[0].innerHTML
     let dwellTime = children[5].children[0].innerHTML
     let stager = children[6].children[0].innerHTML
@@ -51,6 +51,19 @@ function extractRowData(rowData)
     }
 
     return { route, loc, stageTime, 'carts': { cart, status, dwellTime, stager, isAudited: false }}
+}
+
+function alignStageTime(stageTime)
+{
+    let newStageTime = stageTime
+    let stageSplit = stageTime.split(':')
+
+    if (stageSplit[1] !== '20' && stageSplit[1] !== '50')
+    {
+        newStageTime = stageSplit[0] + ':' + (parseInt(stageSplit[1]) + 15)
+    }
+
+    return newStageTime
 }
 
 function getNextButton()
