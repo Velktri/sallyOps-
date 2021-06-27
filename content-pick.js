@@ -1,0 +1,1 @@
+console.log('Pick Content script is loaded.')
