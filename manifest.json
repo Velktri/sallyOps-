@@ -11,14 +11,9 @@
     },
     "permissions": [
         "tabs",
-        "storage"
+        "storage",
+        "https://velktri.github.io/sallyOps-/testing/*", 
+        "*://*.amazon.dev/*"
     ],
-    "content_security_policy": "script-src 'self'; object-src 'self'",
-    "content_scripts": [
-        {
-            "matches": ["https://velktri.github.io/sallyOps-/testing/*.html", "*://*.amazon.dev/*"],
-            "js": ["content.js"],
-            "all_frames": true
-        }
-    ]
+    "content_security_policy": "script-src 'self'; object-src 'self'"
 }

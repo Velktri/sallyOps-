@@ -10,30 +10,17 @@ function handleRemoved(tabID)
 
 function handleMessages(request, sender, sendResponse)
 {
+    /* User clicked the Update button */
     if (request.command === 'SO_reload_content')
     {
-        browser.tabs.query({
-            url: ["*://logistics.amazon.com/station/dashboard/stage",
-                  "https://velktri.github.io/sallyOps-/testing/*"
-            ]
-        }).then(tabs => {
-            tabs.forEach(tab => {
-                browser.tabs.reload(tab.id)
-            })
-        })
+        LoadContentWindow()
     }
 
+    /* Data returning from the content script */
     if (request.command === 'SO_table_data')
     {
         storeCartData(request.data)
     }
-}
-
-function getTableData(tab)
-{
-    browser.tabs.sendMessage(tab.id, { command: "SO_getTableData" }).then(response => {
-        storeCartData(response.data)
-    })
 }
 
 function mergeCartData(newData)
@@ -88,27 +75,43 @@ function storeCartData(cartData)
             browser.tabs.sendMessage(res.SO_UI, { command: 'SO_carts_updated' })
         })
     })
+
+    /* Close Content Window */
+    browser.storage.local.get("SO_Content_Window").then((result) => {
+        if (result.SO_Content_Window !== browser.windows.WINDOW_ID_NONE)
+        {
+            browser.windows.remove(result.SO_Content_Window)
+            browser.storage.local.set({ SO_Content_Window: browser.windows.WINDOW_ID_NONE })
+        }
+    })
+}
+
+function LoadContentWindow()
+{
+    browser.windows.create({
+        url: [/*'https://logistics.amazon.com/station/dashboard/stage', */'https://velktri.github.io/sallyOps-/testing/new-routes.html'],
+        focused: false,
+        state: "minimized"
+    }).then(windowInfo => {
+        setTimeout(() => {
+            console.log(windowInfo)
+            browser.tabs.executeScript(
+                windowInfo.tabs[0].id,
+                {
+                    file: "/content.js",
+                    allFrames: true
+                }
+            )
+        }, 300)
+
+        browser.storage.local.set({ SO_Content_Window: windowInfo.id })
+    })
 }
 
 function handleBrowserActionClick() {
-    /* Create station command tab */
-    browser.tabs.query({
-        url: ["*://logistics.amazon.com/station/dashboard/stage",
-              "https://velktri.github.io/sallyOps-/testing/*"
-        ]
-    }).then(tabs => {
+    LoadContentWindow()
 
-        if (tabs.length === 0)
-        {
-            browser.tabs.create({ url: 'https://logistics.amazon.com/station/dashboard/stage' }) //https://velktri.github.io/sallyOps-/testing/new-routes.html' })
-        }
-        else
-        {
-            getTableData(tabs[0])
-        }
-    })
-
-    /* Create sally dashboard tab */
+    /* Create or focus sally dashboard tab */
     browser.storage.local.get('SO_UI').then(res => {
         if (res.SO_UI === undefined || res.SO_UI === browser.tabs.TAB_ID_NONE)
         {
@@ -131,4 +134,5 @@ browser.runtime.onMessage.addListener(handleMessages)
 browser.browserAction.onClicked.addListener(handleBrowserActionClick)
 
 browser.storage.local.set({ SO_UI: browser.tabs.TAB_ID_NONE })
+browser.storage.local.set({ SO_Content_Window: browser.windows.WINDOW_ID_NONE })
 browser.storage.local.set({ carts: {} })

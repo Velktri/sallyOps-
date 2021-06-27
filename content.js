@@ -1,7 +1,7 @@
-let waveData = {}
 // read page data from table
 function readTable() 
 {
+    let waveData = {}
     let table = document.getElementsByTagName('table')[0].children[1]
     let rows = table.getElementsByTagName('tr')
 
@@ -31,6 +31,8 @@ function readTable()
             }
         }
     }
+
+    return waveData
 }
 
 function extractRowData(rowData)
@@ -117,13 +119,12 @@ function clickNextPage()
 
 function compileData(observer)
 {
+    let data = {}
     if (observer !== undefined) { observer.disconnect() }
     resetToFirstPage()
-    readTable()
+    data = {...readTable(), ...data }
     clickNextPage()
 
-    let data = waveData
-    waveData = {}
     return data
 }
 
@@ -153,3 +154,7 @@ if (window.location.hash === '#/stage')
     const observer = new MutationObserver(callback)
     observer.observe(document, { attributes: true, childList: true, subtree: true })
 }
+
+
+console.log("Test Content script is loaded.")
+browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData() })
