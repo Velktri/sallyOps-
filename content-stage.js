@@ -1,5 +1,5 @@
 // read page data from table
-function readTable() 
+function readTable()
 {
     let waveData = {}
     let table = document.getElementsByTagName('table')[0].children[1]

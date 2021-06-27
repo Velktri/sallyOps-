@@ -89,16 +89,31 @@ function storeCartData(cartData)
 function LoadContentWindow()
 {
     browser.windows.create({
-        url: [/*'https://logistics.amazon.com/station/dashboard/stage', */'https://velktri.github.io/sallyOps-/testing/new-routes.html'],
+        url: [/*'https://logistics.amazon.com/station/dashboard/stage',
+                'https://logistics.amazon.com/station/dashboard/pick'*/
+                'https://velktri.github.io/sallyOps-/testing/new-routes.html',
+                'https://velktri.github.io/sallyOps-/testing/simple.html'
+        ],
         focused: false,
-        state: "minimized"
+        //state: "minimized"
     }).then(windowInfo => {
         setTimeout(() => {
             console.log(windowInfo)
             browser.tabs.executeScript(
                 windowInfo.tabs[0].id,
                 {
-                    file: "/content.js",
+                    file: "/content-stage.js",
+                    allFrames: true
+                }
+            )
+        }, 300)
+
+        setTimeout(() => {
+            console.log(windowInfo)
+            browser.tabs.executeScript(
+                windowInfo.tabs[1].id,
+                {
+                    file: "/content-pick.js",
                     allFrames: true
                 }
             )
