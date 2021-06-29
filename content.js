@@ -1,10 +1,13 @@
 // read page data from table
 function readTable() 
 {
+    console.log(document.getElementsByTagName('table'))
     let waveData = {}
     let table = document.getElementsByTagName('table')[0].children[1]
+    console.log(table)
     let rows = table.getElementsByTagName('tr')
-
+    console.log(rows)
+    
     for (let i = 1; i < rows.length; i++)
     {
         if (rows[i].childNodes.length !== 0) 
@@ -106,24 +109,26 @@ function resetToFirstPage()
     }
 }
 
-function clickNextPage()
+function clickNextPage(data)
 {
     let nextButton = getNextButton()
     while (nextButton !== null)
     {
         nextButton.click()
-        readTable()
+        data = {...readTable(), ...data }
         nextButton = getNextButton()
     }
+
+    return data
 }
 
 function compileData(observer)
 {
-    let data = {}
+    let data = readTable()
+    console.log(data)
     if (observer !== undefined) { observer.disconnect() }
     resetToFirstPage()
-    data = {...readTable(), ...data }
-    clickNextPage()
+    data = {...clickNextPage(data), ...data }
 
     return data
 }
@@ -143,18 +148,7 @@ function callback(mutations, observer)
 if (window.location.hash === '#/stage')
 {
     console.log("Content script is loaded.")
-    
-    browser.runtime.onMessage.addListener((message) => {
-        if (message.command === "SO_getTableData")
-        {
-            return Promise.resolve({ data: compileData() })
-        }
-    })
 
     const observer = new MutationObserver(callback)
     observer.observe(document, { attributes: true, childList: true, subtree: true })
 }
-
-
-console.log("Test Content script is loaded.")
-browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData() })

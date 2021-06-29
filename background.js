@@ -89,9 +89,8 @@ function storeCartData(cartData)
 function LoadContentWindow()
 {
     browser.windows.create({
-        url: [/*'https://logistics.amazon.com/station/dashboard/stage', */'https://velktri.github.io/sallyOps-/testing/new-routes.html'],
-        focused: false,
-        state: "minimized"
+        url: 'https://logistics.amazon.com/station/dashboard/stage'/*, 'https://velktri.github.io/sallyOps-/testing/new-routes.html'*/,
+        state: "minimized",
     }).then(windowInfo => {
         setTimeout(() => {
             console.log(windowInfo)
@@ -102,7 +101,7 @@ function LoadContentWindow()
                     allFrames: true
                 }
             )
-        }, 300)
+        }, 5000)
 
         browser.storage.local.set({ SO_Content_Window: windowInfo.id })
     })

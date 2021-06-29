@@ -12,8 +12,10 @@
     "permissions": [
         "tabs",
         "storage",
-        "https://velktri.github.io/sallyOps-/testing/*", 
-        "*://*.amazon.dev/*"
+        "https://velktri.github.io/sallyOps-/testing/*",
+        "*://*.amazon.dev/*",
+        "https://logistics.amazon.com/station/dashboard/stage"
+
     ],
     "content_security_policy": "script-src 'self'; object-src 'self'"
 }
