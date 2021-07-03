@@ -1,12 +1,9 @@
 // read page data from table
 function readTable() 
 {
-    console.log(document.getElementsByTagName('table'))
     let waveData = {}
     let table = document.getElementsByTagName('table')[0].children[1]
-    console.log(table)
     let rows = table.getElementsByTagName('tr')
-    console.log(rows)
     
     for (let i = 1; i < rows.length; i++)
     {
@@ -125,7 +122,6 @@ function clickNextPage(data)
 function compileData(observer)
 {
     let data = readTable()
-    console.log(data)
     if (observer !== undefined) { observer.disconnect() }
     resetToFirstPage()
     data = {...clickNextPage(data), ...data }
@@ -135,8 +131,6 @@ function compileData(observer)
 
 function callback(mutations, observer)
 {
-    console.log(mutations[0].target.tagName)
-    console.log('dom changed')
     if (mutations[0].target.tagName === 'TBODY')
     {
         setTimeout(function() {
@@ -152,3 +146,5 @@ if (window.location.hash === '#/stage')
     const observer = new MutationObserver(callback)
     observer.observe(document, { attributes: true, childList: true, subtree: true })
 }
+
+console.log('hello')

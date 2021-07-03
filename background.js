@@ -89,19 +89,41 @@ function storeCartData(cartData)
 function LoadContentWindow()
 {
     browser.windows.create({
-        url: 'https://logistics.amazon.com/station/dashboard/stage'/*, 'https://velktri.github.io/sallyOps-/testing/new-routes.html'*/,
-        state: "minimized",
+        url: 'https://logistics.amazon.com/station/dashboard/stage',
     }).then(windowInfo => {
-        setTimeout(() => {
-            console.log(windowInfo)
+        browser.windows.update(
+            windowInfo.id,
+            {
+                state: "minimized"
+            }
+        )
+
+        let gate = false
+        let tabStatusCheck = setInterval(function() {
             browser.tabs.executeScript(
                 windowInfo.tabs[0].id,
                 {
-                    file: "/content.js",
-                    allFrames: true
+                    code: "console.log('ping')"
                 }
-            )
-        }, 5000)
+            ).then(() => {
+                console.log('tick')
+                if (gate === false)
+                {
+                    gate = true
+                    clearInterval(tabStatusCheck)
+                    console.log('success')
+                    browser.tabs.executeScript(
+                        windowInfo.tabs[0].id,
+                        {
+                            file: "/content.js",
+                            allFrames: true
+                        }
+                    )
+                }
+            }, (error) => {
+                console.log(error)
+            })
+        }, 500)
 
         browser.storage.local.set({ SO_Content_Window: windowInfo.id })
     })
