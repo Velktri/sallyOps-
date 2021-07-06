@@ -46,6 +46,7 @@ Thumbs.db
 *.rar
 *.tar
 *.zip
+*.xpi
 
 # ignore private/secret files
 *.der
