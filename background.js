@@ -115,7 +115,7 @@ function LoadContentWindow()
                     browser.tabs.executeScript(
                         windowInfo.tabs[0].id,
                         {
-                            file: "/content.js",
+                            file: "/content-stage.js",
                             allFrames: true
                         }
                     )
