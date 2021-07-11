@@ -25,7 +25,6 @@ function handleMessages(request, sender, sendResponse)
     /* Greeting returning from content script */
     if (request.command === 'SO_window_message')
     {
-        console.log('test')
         /* Send Execute script to tab */
         browser.storage.local.get("SO_Content_Window").then((result) => {
             if (sender.tab.windowId === result.SO_Content_Window)
