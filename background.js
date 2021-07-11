@@ -16,10 +16,29 @@ function handleMessages(request, sender, sendResponse)
         LoadContentWindow()
     }
 
-    /* Data returning from the content script */
+    /* Table data returning from the execute script */
     if (request.command === 'SO_table_data')
     {
         storeCartData(request.data)
+    }
+
+    /* Greeting returning from content script */
+    if (request.command === 'SO_window_message')
+    {
+        console.log('test')
+        /* Send Execute script to tab */
+        browser.storage.local.get("SO_Content_Window").then((result) => {
+            if (sender.tab.windowId === result.SO_Content_Window)
+            {
+                browser.tabs.executeScript(
+                    sender.tab.id,
+                    {
+                        file: "/content-stage.js",
+                        allFrames: true
+                    }
+                )
+            }
+        })
     }
 }
 
@@ -97,34 +116,7 @@ function LoadContentWindow()
                 state: "minimized"
             }
         )
-
-        let gate = false
-        let tabStatusCheck = setInterval(function() {
-            browser.tabs.executeScript(
-                windowInfo.tabs[0].id,
-                {
-                    code: "console.log('ping')"
-                }
-            ).then(() => {
-                console.log('tick')
-                if (gate === false)
-                {
-                    gate = true
-                    clearInterval(tabStatusCheck)
-                    console.log('success')
-                    browser.tabs.executeScript(
-                        windowInfo.tabs[0].id,
-                        {
-                            file: "/content-stage.js",
-                            allFrames: true
-                        }
-                    )
-                }
-            }, (error) => {
-                console.log(error)
-            })
-        }, 500)
-
+        
         browser.storage.local.set({ SO_Content_Window: windowInfo.id })
     })
 }

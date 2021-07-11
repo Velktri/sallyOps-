@@ -17,5 +17,12 @@
         "https://logistics.amazon.com/station/dashboard/stage"
 
     ],
-    "content_security_policy": "script-src 'self'; object-src 'self'"
+    "content_security_policy": "script-src 'self'; object-src 'self'",
+    "content_scripts": [
+        {
+            "matches": ["*://*.amazon.dev/*"],
+            "js": ["content-message.js"],
+            "all_frames": true
+        }
+    ]
 }
