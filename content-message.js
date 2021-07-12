@@ -1,1 +1,1 @@
-browser.runtime.sendMessage({ command: 'SO_window_message', data: "hello from CS" })
+browser.runtime.sendMessage({ command: 'SO_window_message', data: "." })
