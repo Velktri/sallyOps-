@@ -100,7 +100,7 @@ function storeCartData(cartData)
         })
     })
 
-    /* Close Content Window */
+    /* Close stage tab */
     browser.storage.local.get("SO_Content_Tabs").then((result) => {
         if (result.SO_Content_Tabs[0].id !== browser.tabs.TAB_ID_NONE)
         {
