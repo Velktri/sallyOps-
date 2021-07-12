@@ -26,16 +26,22 @@ function handleMessages(request, sender, sendResponse)
     if (request.command === 'SO_window_message')
     {
         /* Send Execute script to tab */
-        browser.storage.local.get("SO_Content_Window").then((result) => {
-            if (sender.tab.windowId === result.SO_Content_Window)
+        browser.storage.local.get("SO_Content_Tabs").then((result) => {
+            let contentFiles = ["/content-stage.js", "/content-pick.js"]
+            let contentTabs = result.SO_Content_Tabs
+
+            for (let i = 0; i < contentTabs.length; i++)
             {
-                browser.tabs.executeScript(
-                    sender.tab.id,
-                    {
-                        file: "/content-stage.js",
-                        allFrames: true
-                    }
-                )
+                if (sender.tab.id === contentTabs[i].id)
+                {
+                    browser.tabs.executeScript(
+                        sender.tab.id,
+                        {
+                            file: contentFiles[i],
+                            allFrames: true
+                        }
+                    )
+                }
             }
         })
     }
@@ -95,11 +101,11 @@ function storeCartData(cartData)
     })
 
     /* Close Content Window */
-    browser.storage.local.get("SO_Content_Window").then((result) => {
-        if (result.SO_Content_Window !== browser.windows.WINDOW_ID_NONE)
+    browser.storage.local.get("SO_Content_Tabs").then((result) => {
+        if (result.SO_Content_Tabs[0].id !== browser.tabs.TAB_ID_NONE)
         {
-            browser.windows.remove(result.SO_Content_Window)
-            browser.storage.local.set({ SO_Content_Window: browser.windows.WINDOW_ID_NONE })
+            browser.tabs.remove(result.SO_Content_Tabs[0].id)
+            browser.storage.local.set({ SO_Content_Tabs: [browser.tabs.TAB_ID_NONE, result.SO_Content_Tabs[1]] })
         }
     })
 }
@@ -107,7 +113,9 @@ function storeCartData(cartData)
 function LoadContentWindow()
 {
     browser.windows.create({
-        url: 'https://logistics.amazon.com/station/dashboard/stage',
+        url: ['https://logistics.amazon.com/station/dashboard/stage',
+              'https://logistics.amazon.com/station/dashboard/pick'
+            ],
     }).then(windowInfo => {
         browser.windows.update(
             windowInfo.id,
@@ -116,7 +124,7 @@ function LoadContentWindow()
             }
         )
         
-        browser.storage.local.set({ SO_Content_Window: windowInfo.id })
+        browser.storage.local.set({ SO_Content_Tabs: windowInfo.tabs })
     })
 }
 
@@ -146,5 +154,5 @@ browser.runtime.onMessage.addListener(handleMessages)
 browser.browserAction.onClicked.addListener(handleBrowserActionClick)
 
 browser.storage.local.set({ SO_UI: browser.tabs.TAB_ID_NONE })
-browser.storage.local.set({ SO_Content_Window: browser.windows.WINDOW_ID_NONE })
+browser.storage.local.set({ SO_Content_Tabs: [] })
 browser.storage.local.set({ carts: {} })
