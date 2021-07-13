@@ -133,26 +133,15 @@ function callback(mutations, observer)
     if (mutations[0].target.tagName === 'TBODY')
     {
         setTimeout(function() {
-            browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData(observer) })
+            browser.runtime.sendMessage({ command: 'SO_stage_data', data: compileData(observer) })
         }, 500)
     }
 }
 
 if (window.location.hash === '#/stage')
 {
-    console.log("Content script is loaded.")
-    
-    browser.runtime.onMessage.addListener((message) => {
-        if (message.command === "SO_getTableData")
-        {
-            return Promise.resolve({ data: compileData() })
-        }
-    })
+    console.log("Content script for Stage is loaded.")
 
     const observer = new MutationObserver(callback)
     observer.observe(document, { attributes: true, childList: true, subtree: true })
 }
-
-
-console.log("Test Content script is loaded.")
-browser.runtime.sendMessage({ command: 'SO_table_data', data: compileData() })

@@ -17,9 +17,15 @@ function handleMessages(request, sender, sendResponse)
     }
 
     /* Table data returning from the execute script */
-    if (request.command === 'SO_table_data')
+    if (request.command === 'SO_stage_data')
     {
         storeCartData(request.data)
+    }
+
+    if (request.command === 'SO_pick_data')
+    {
+        console.log(request.data)
+        //storeCartData(request.data)
     }
 
     /* Greeting returning from content script */
