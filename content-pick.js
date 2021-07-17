@@ -1,6 +1,6 @@
 function readTable() 
 {
-    let tableData = []
+    let tableData = {}
     let table = document.getElementsByTagName('table')[0].children[1]
     let rows = table.getElementsByTagName('tr')
 
@@ -8,40 +8,8 @@ function readTable()
     {
         if (rows[i].childNodes.length !== 0) 
         {
-            let rowData = extractRowData(rows[i])
-            tableData.push(rowData)
-            /*if (tableData[rowData.stationPair] === undefined)
-            {
-                tableData[rowData.stationPair] = {}
-            }*/
-
-            
+            tableData = { ...tableData, ...extractRowData(rows[i]) }
         }
-
-        /*if (rows[i].childNodes.length !== 0) 
-        {
-            let rowData = extractRowData(rows[i])
-            console.log(rowData)
-            if (tableData[rowData.stageTime] === undefined)
-            {
-                tableData[rowData.stageTime] = {}
-            }
-    
-            let waveRoutes = tableData[rowData.stageTime]
-    
-            let found = false
-            if (waveRoutes[rowData.route] !== undefined)
-            {
-                waveRoutes[rowData.route].carts.push(rowData.carts)
-                found = true
-            }
-    
-            if (!found)
-            {
-                let temp = {[rowData.route]: { loc: rowData.loc, carts: [rowData.carts] }}
-                tableData[rowData.stageTime] = { ...tableData[rowData.stageTime], ...temp }
-            }
-        }*/
     }
 
     return tableData
@@ -52,15 +20,13 @@ function extractRowData(rowData)
     let children = rowData.children
 
     let stationPair = children[0].children[0].innerHTML
-    let pickByTime = children[1].children[0].textContent
-    let route = children[2].children[0].children[0].innerHTML
+    let route = children[2].children[0].children[0].children[0].innerHTML
     let status = children[3].children[0].children[0].children[0].children[1].innerHTML
     let progress = children[5].children[0].innerHTML
-    let duration = children[7].children[0].innerHTML
 
     if (status === "RouteCut") { status = "Route Cut" }
 
-    return { stationPair, pickByTime, route, status, progress, duration }
+    return { [route]: { stationPair, status, progress }}
 }
 
 function compileData(pickObserver)
