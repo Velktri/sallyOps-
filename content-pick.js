@@ -29,11 +29,63 @@ function extractRowData(rowData)
     return { [route]: { stationPair, status, progress }}
 }
 
+function getNextButton()
+{
+    let pageBtn = document.getElementsByClassName("css-d38mm5")
+
+    for (let i = 0; i < pageBtn.length; i++) {
+        if (pageBtn[i].childNodes[0].childNodes[0].getAttribute("aria-label").slice(6, 10) === "next")
+        {
+            return pageBtn[i]
+        }
+    }
+
+    return null
+}
+
+function getPrevButton()
+{
+    let pageBtn = document.getElementsByClassName("css-d38mm5")
+
+    for (let i = 0; i < pageBtn.length; i++) {
+        if (pageBtn[i].childNodes[0].childNodes[0].getAttribute("aria-label").slice(6, 10) === "prev")
+        {
+            return pageBtn[i]
+        }
+    }
+
+    return null
+}
+
+function resetToFirstPage()
+{
+    let prevBtn = getPrevButton()
+    while(prevBtn !== null)
+    {
+        prevBtn.click()
+        prevBtn = getPrevButton()
+    }
+}
+
+function extractDataFromPages()
+{
+    let data = readTable({})
+    let nextButton = getNextButton()
+    while (nextButton !== null)
+    {
+        nextButton.click()
+        data = { ...data, ...readTable(data) }
+        nextButton = getNextButton()
+    }
+
+    return data
+}
+
 function compileData(pickObserver)
 {
     if (pickObserver !== undefined) { pickObserver.disconnect() }
-    return readTable()
-    //clickNextPage()
+    resetToFirstPage()
+    return extractDataFromPages()
 }
 
 function callback(mutations, pickObserver)

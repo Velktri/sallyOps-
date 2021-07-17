@@ -19,13 +19,12 @@ function handleMessages(request, sender, sendResponse)
     /* Table data returning from the execute script */
     if (request.command === 'SO_stage_data')
     {
-        storeCartData(request.data)
+        storeStageData(request.data)
     }
 
     if (request.command === 'SO_pick_data')
     {
-        console.log(request.data)
-        //storeCartData(request.data)
+        storePickData(request.data)
     }
 
     /* Greeting returning from content script */
@@ -97,7 +96,7 @@ function mergeCartData(newData)
     })
 }
 
-function storeCartData(cartData)
+function storeStageData(cartData)
 {
     mergeCartData(cartData).then(carts => {
         browser.storage.local.set({ carts })
@@ -112,6 +111,20 @@ function storeCartData(cartData)
         {
             browser.tabs.remove(result.SO_Content_Tabs[0].id)
             browser.storage.local.set({ SO_Content_Tabs: [browser.tabs.TAB_ID_NONE, result.SO_Content_Tabs[1]] })
+        }
+    })
+}
+
+function storePickData(pickData)
+{
+    console.log(pickData)
+
+    /* Close pick tab */
+    browser.storage.local.get("SO_Content_Tabs").then((result) => {
+        if (result.SO_Content_Tabs[1].id !== browser.tabs.TAB_ID_NONE)
+        {
+            browser.tabs.remove(result.SO_Content_Tabs[1].id)
+            browser.storage.local.set({ SO_Content_Tabs: [result.SO_Content_Tabs[0], browser.tabs.TAB_ID_NONE] })
         }
     })
 }
@@ -160,5 +173,6 @@ browser.runtime.onMessage.addListener(handleMessages)
 browser.browserAction.onClicked.addListener(handleBrowserActionClick)
 
 browser.storage.local.set({ SO_UI: browser.tabs.TAB_ID_NONE })
+browser.storage.local.set({ SO_Content_Tabs_Gate: [{}, {}] })
 browser.storage.local.set({ SO_Content_Tabs: [] })
 browser.storage.local.set({ carts: {} })
