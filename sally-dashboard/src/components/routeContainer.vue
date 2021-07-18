@@ -8,6 +8,10 @@
                     {{ routeData.route }}
                 </p>
 
+                <p class="card-header-title so-title-font">
+                    {{ routeData.stationPair }} | {{ progressPercent }}
+                </p>
+
                 <div class="so-button card-header-icon is-inverted" @click="auditRoute">
                     <CheckCircle :isAudited="isAudited" />
                 </div>
@@ -59,6 +63,12 @@ export default {
 
             this.routeAuditState = isAudited
             return isAudited
+        },
+
+        progressPercent() {
+            if (this.routeData.status !== "In Progress") { return "100%" }
+            let splitProgress = this.routeData.progress.split('/')
+            return (100 * ((splitProgress[0] / splitProgress[1]).toFixed(2))) + '%'
         }
     },
 

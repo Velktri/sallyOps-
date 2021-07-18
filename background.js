@@ -19,12 +19,12 @@ function handleMessages(request, sender, sendResponse)
     /* Table data returning from the execute script */
     if (request.command === 'SO_stage_data')
     {
-        storeStageData(request.data)
+        storeData(request.data, 0)
     }
 
     if (request.command === 'SO_pick_data')
     {
-        storePickData(request.data)
+        storeData(request.data, 1)
     }
 
     /* Greeting returning from content script */
@@ -50,6 +50,47 @@ function handleMessages(request, sender, sendResponse)
             }
         })
     }
+}
+
+function storeData(data, tabID)
+{
+    /* Close content tab */
+    browser.storage.local.get("SO_Content_Tabs").then((result) => {
+        if (result.SO_Content_Tabs[tabID].id !== browser.tabs.TAB_ID_NONE)
+        {
+            browser.tabs.remove(result.SO_Content_Tabs[tabID].id)
+            result.SO_Content_Tabs[tabID] = browser.tabs.TAB_ID_NONE
+            browser.storage.local.set({ SO_Content_Tabs: result.SO_Content_Tabs })
+        }
+    })
+
+    /* Store content data */
+    browser.storage.local.get("SO_Content_Data_Seperate").then(result => {
+        result.SO_Content_Data_Seperate[tabID] = data
+        browser.storage.local.set({ SO_Content_Data_Seperate: result.SO_Content_Data_Seperate })
+
+        if (Object.keys(result.SO_Content_Data_Seperate[0]).length > 0 && Object.keys(result.SO_Content_Data_Seperate[1]).length > 0)
+        {
+            mergeCartData(result.SO_Content_Data_Seperate[0]).then(cartData => {
+                browser.storage.local.set({ carts: injectPickData(cartData, result.SO_Content_Data_Seperate[1]) })
+                browser.storage.local.set({ SO_Content_Data_Seperate: [{}, {}] })
+                browser.storage.local.get('SO_UI').then((res) => {
+                    browser.tabs.sendMessage(res.SO_UI, { command: 'SO_carts_updated' })
+                })
+            })
+        }
+    })
+}
+
+function injectPickData(cartData, pickData)
+{
+    Object.keys(cartData).forEach(waveTime => {
+        Object.keys(cartData[waveTime]).forEach(routeId => {
+            cartData[waveTime][routeId] = { ...cartData[waveTime][routeId], ...pickData[routeId] }
+        })
+    })
+
+    return cartData
 }
 
 function mergeCartData(newData)
@@ -93,39 +134,6 @@ function mergeCartData(newData)
             })
         })
         return Promise.resolve(updatedData)
-    })
-}
-
-function storeStageData(cartData)
-{
-    mergeCartData(cartData).then(carts => {
-        browser.storage.local.set({ carts })
-        browser.storage.local.get('SO_UI').then((res) => {
-            browser.tabs.sendMessage(res.SO_UI, { command: 'SO_carts_updated' })
-        })
-    })
-
-    /* Close stage tab */
-    browser.storage.local.get("SO_Content_Tabs").then((result) => {
-        if (result.SO_Content_Tabs[0].id !== browser.tabs.TAB_ID_NONE)
-        {
-            browser.tabs.remove(result.SO_Content_Tabs[0].id)
-            browser.storage.local.set({ SO_Content_Tabs: [browser.tabs.TAB_ID_NONE, result.SO_Content_Tabs[1]] })
-        }
-    })
-}
-
-function storePickData(pickData)
-{
-    console.log(pickData)
-
-    /* Close pick tab */
-    browser.storage.local.get("SO_Content_Tabs").then((result) => {
-        if (result.SO_Content_Tabs[1].id !== browser.tabs.TAB_ID_NONE)
-        {
-            browser.tabs.remove(result.SO_Content_Tabs[1].id)
-            browser.storage.local.set({ SO_Content_Tabs: [result.SO_Content_Tabs[0], browser.tabs.TAB_ID_NONE] })
-        }
     })
 }
 
@@ -173,6 +181,6 @@ browser.runtime.onMessage.addListener(handleMessages)
 browser.browserAction.onClicked.addListener(handleBrowserActionClick)
 
 browser.storage.local.set({ SO_UI: browser.tabs.TAB_ID_NONE })
-browser.storage.local.set({ SO_Content_Tabs_Gate: [{}, {}] })
+browser.storage.local.set({ SO_Content_Data_Seperate: [{}, {}] })
 browser.storage.local.set({ SO_Content_Tabs: [] })
 browser.storage.local.set({ carts: {} })

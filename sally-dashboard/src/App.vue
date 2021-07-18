@@ -155,6 +155,7 @@ export default {
 
         processCartData() {
             return browser.storage.local.get('carts').then((res) => {
+                console.log(res.carts)
                 let sortedStageTimes = Object.keys(res.carts).sort((x, y) => {
                     let xTime = x.split(':')
                     let yTime = y.split(':')
