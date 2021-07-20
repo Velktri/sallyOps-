@@ -68,7 +68,7 @@ export default {
         progressPercent() {
             if (this.routeData.status !== "In Progress") { return "100%" }
             let splitProgress = this.routeData.progress.split('/')
-            return (100 * ((splitProgress[0] / splitProgress[1]).toFixed(2))) + '%'
+            return Math.floor(100 * ((splitProgress[0] / splitProgress[1]).toFixed(2))) + '%'
         }
     },
 
