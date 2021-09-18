@@ -38,18 +38,17 @@ function extractRowData(rowData)
 {
     let children = rowData.children
 
-    let cart = children[0].children[0].innerHTML
+    let stageTime = alignStageTime(children[0].children[0].innerHTML)
     let route = children[1].children[0].textContent
-    let stageTime = alignStageTime(children[2].children[0].innerHTML)
-    let loc = children[3].children[0].innerHTML
-    let dwellTime = children[5].children[0].innerHTML
-    let stager = children[6].children[0].innerHTML
+    let cart = children[2].children[0].innerHTML
+    let loc = children[4].children[0].innerHTML
 
-    let status = children[4].children[0].textContent.trim()
-    if (status.slice(0, 3) === "Not")
-    {
-        status = "Not Ready"
-    }
+
+    let status = children[5].children[0].textContent.trim()
+    if (status.slice(0, 3) === "Not") { status = "Not Ready" }
+
+    let dwellTime = children[6].children[0].innerHTML
+    let stager = children[7].children[0].innerHTML
 
     return { route, loc, stageTime, 'carts': { cart, status, dwellTime, stager, isAudited: false }}
 }
