@@ -1,5 +1,5 @@
 <template>
-    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    <nav class=" so-px pagination is-centered" role="navigation" aria-label="pagination">
         <ul class="pagination-list">
             <li v-for="i in waves" :key="i">
                 <a class="pagination-link" :class="isSelected(i)" @click="clickButton(i)">{{ i - 1 }}</a>
@@ -37,3 +37,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.so-px {
+    padding: 0rem 3rem;
+}
+</style>

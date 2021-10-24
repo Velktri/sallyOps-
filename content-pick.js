@@ -81,27 +81,73 @@ function extractDataFromPages()
     return data
 }
 
-function compileData(pickObserver)
+function compileData()
 {
-    if (pickObserver !== undefined) { pickObserver.disconnect() }
     resetToFirstPage()
     return extractDataFromPages()
 }
 
+function injectModal() 
+{
+    let bod = document.body
+    let modal = document.createElement('div')
+
+    let styles = `
+        .modal-content { 
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #000;
+            border-radius: 1rem;
+            width: 80%;
+        }
+        .modal {
+            position: fixed;
+            z-index: 1;
+            padding-top: 50vh;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 130);
+            background-color: rgba(0, 0, 130, 0.8);
+        }
+        `
+
+    let modalStyle = document.createElement("style")
+    modalStyle.type = "text/css"
+    modalStyle.innerText = styles
+    document.head.appendChild(modalStyle)
+
+    modal.innerHTML = `
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <p>This tab is being used by the SallyOps+ addon. Closing it will result in errors. </p>
+            <p>Only close this window if you're are sure you don't need to use SallyOps+ anymore.</p>
+        </div>
+    </div>`
+
+    bod.appendChild(modal)
+}
+
 function callback(mutations, pickObserver)
 {
-    console.log(mutations[0].target.tagName)
     if (mutations[0].target.tagName === 'TBODY')
     {
-        setTimeout(function() {
-            browser.runtime.sendMessage({ command: 'SO_pick_data', data: compileData(pickObserver) })
-        }, 500)
+        if (pickObserver !== undefined) { pickObserver.disconnect() }
+        browser.runtime.sendMessage({ command: 'SO_pick_data', data: compileData() })
+
+        setInterval(function() {
+            browser.runtime.sendMessage({ command: 'SO_pick_data', data: compileData() })
+        }, 30000)
     }
 }
 
 if (window.location.hash === '#/pick')
 {
     console.log("Content script for pick is loaded.")
+    injectModal()
 
     const pickObserver = new MutationObserver(callback)
     pickObserver.observe(document, { attributes: true, childList: true, subtree: true })

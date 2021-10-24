@@ -1,93 +1,53 @@
 <template>
-    <div>
-        <nav class="navbar" role="navigation" aria-label="main navigation">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="https://bulma.io">
-                    <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
-                </a>
-
-                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
-                    data-target="navbarBasicExample">
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                </a>
-            </div>
-
-            <div id="navbarBasicExample" class="navbar-menu">
-                <div class="navbar-start">
-                    <a class="navbar-item">
-                        <span class="icon">
-                            <i class="icon ion-md-logo-github has-text-danger so-icon-large"></i>
-                        </span>
-                    </a>
-
-                    <!--<div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link">
-                            Setting
-                        </a>
-
-                        <div class="navbar-dropdown">
-                            <a class="navbar-item">
-                                To Do
-                            </a>
-                            <a class="navbar-item">
-                                To Do
-                            </a>
-                            <a class="navbar-item">
-                                To Do
-                            </a>
-                            <hr class="navbar-divider">
-                            <a class="navbar-item">
-                                To Do
-                            </a>
-                        </div>
-                    </div>-->
-                </div>
-
-                <div v-if="processed" class="navbar-item">
+    <div v-if="processed">
+        <div class="so-nav-color">
+            <div class="columns is-gapless is-vcentered">
+                <div class="column is-narrow">
                     <Pagination :waves="$store.state.sortedStageTimes.length" />
                 </div>
 
-                <div class="navbar-end">
-                    <div class="navbar-item">
-                        Add clock for auto update
-                    </div>
-                    <div class="navbar-item">
-                        <button class="button is-link" :class="isLoading()" @click="updateCartData()">
-                            <strong>Update Now</strong>
-                        </button>
+                <div class="column is-1">
+
+                </div>
+
+                <div class="column">
+                    <div class="columns is-vcentered">
+                        <div class="column">
+                            <div class="title is-1">
+                                Routes: <span id="route-amount">{{ routesInWave }}</span>
+                            </div>
+                        </div>
+
+                        <div class="column is-4">
+                            <div class="title is-1">
+                                Stage Time: <span id="stage-by-time">{{ stageByTime }}</span>
+                            </div>
+                        </div>
+
+                        <div class="column is-5">
+                            <div class="title is-1">
+                                {{ timeRemaining }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </nav>
-
-
-
-        <div v-if="processed" class="overview">
-            <div>
-                Scanner Input: <span id="scanned-cart"></span>
-            </div>
-
-            <div>
-                Routes: <span id="route-amount">{{ routesInWave }}</span>
-            </div>
-            <div>
-                Stage Time: <span id="stage-by-time">{{ stageByTime }}</span>
-            </div>
-            <div>
-                Depart Time: <span id="depart-time">{{ departTime }}</span>
-            </div>
-
         </div>
 
-        <div v-if="processed" class="container is-fluid tabcontent">
+
+
+        <div class="container is-fluid tabcontent">
             <div v-for="i in 5" :key="i" class="columns tab-spacing">
                 <RouteContainer v-for="j in 4" :key="j" :routeData="setRouteData(j + ((i - 1) * 4))" />
             </div>
         </div>
 
         <Scanner />
+    </div>
+    <div v-else>
+        <div class="title is-1">
+            Sally Ops+ is currently gathering data from Station Command Center.
+        </div>
     </div>
 </template>
 
@@ -107,11 +67,31 @@ export default {
     data() {
         return {
             processed: false,
-            gettingData: false
         }
     },
 
     computed: {
+        timeRemaining() {
+            if (this.$store.getters.getActiveStageTime !== undefined) {
+                let date = new Date()
+
+                let curTime = { hour: date.getHours(), minute: date.getMinutes() }
+                let waveTime = { 
+                    hour: parseInt(this.$store.getters.getActiveStageTime.split(':')[0]),
+                    minute: parseInt(this.$store.getters.getActiveStageTime.split(':')[1])
+                }
+
+                let hourDiff = waveTime.hour - curTime.hour
+                let minDiff = waveTime.minute - curTime.minute
+
+
+                let remainingTime = (hourDiff * 60) + minDiff
+                return (remainingTime >= 0) ? remainingTime  + ' Minutes Left' : (remainingTime * -1) + ' Minutes Past'
+            }
+
+            return ''
+        },
+
         routesInWave() {
             if (this.$store.getters.getWaveData !== undefined) {
                 return Object.keys(this.$store.getters.getWaveData).length
@@ -147,15 +127,8 @@ export default {
     },
 
     methods: {
-        isLoading(i) {
-            return {
-                'is-loading': this.gettingData
-            }
-        },
-
         processCartData() {
             return browser.storage.local.get('carts').then((res) => {
-                console.log(res.carts)
                 let sortedStageTimes = Object.keys(res.carts).sort((x, y) => {
                     let xTime = x.split(':')
                     let yTime = y.split(':')
@@ -245,13 +218,6 @@ export default {
             }
 
             return {}
-        },
-
-        updateCartData() {
-            this.gettingData = true
-            browser.runtime.sendMessage({
-                command: 'SO_reload_content',
-            })
         }
     },
 
@@ -263,7 +229,6 @@ export default {
         browser.runtime.onMessage.addListener((res) => {
             if (res.command === 'SO_carts_updated') {
                 this.processCartData()
-                this.gettingData = false
             }
         })
     },
@@ -271,12 +236,16 @@ export default {
 </script>
 
 <style scoped>
+.so-nav-color {
+    background-color: #375a7f;
+    padding: .5rem 0rem;
+}
 .navbar {
     border-radius: 0px;
 }
 
 .tabcontent {
-    padding: 6px 12px;
+    padding: 1rem;
     border-top: none;
 }
 

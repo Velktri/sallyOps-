@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "sallyOps+",
-    "version": "1.0",
+    "version": "1.2.0",
     "description": "",
     "background": {
         "scripts": ["background.js"]
@@ -9,10 +9,14 @@
     "browser_action": {
         "default_title": "sallyOps+"
     },
+    "browser_specific_settings": {
+        "gecko": {
+            "update_url": "https://velktri.github.io/addon-dl/SallyOps/updates.json"
+        }
+    },
     "permissions": [
         "tabs",
         "storage",
-        "https://velktri.github.io/sallyOps-/testing/*",
         "*://*.amazon.dev/*",
         "https://logistics.amazon.com/station/dashboard/stage"
 

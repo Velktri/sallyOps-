@@ -6,16 +6,21 @@ function handleRemoved(tabID)
             browser.storage.local.set({ SO_UI: browser.tabs.TAB_ID_NONE })
         }
     })
+
+    browser.storage.local.get("SO_Content_Tabs").then(res => {
+        res.SO_Content_Tabs.forEach((tab, i) => {
+            if (tabID === tab)
+            {
+                let update = res.SO_Content_Tabs
+                update[i] = browser.tabs.TAB_ID_NONE
+                browser.storage.local.set({ SO_Content_Tabs: update })
+            }
+        })
+    })
 }
 
 function handleMessages(request, sender, sendResponse)
 {
-    /* User clicked the Update button */
-    if (request.command === 'SO_reload_content')
-    {
-        LoadContentWindow()
-    }
-
     /* Table data returning from the execute script */
     if (request.command === 'SO_stage_data')
     {
@@ -37,7 +42,7 @@ function handleMessages(request, sender, sendResponse)
 
             for (let i = 0; i < contentTabs.length; i++)
             {
-                if (sender.tab.id === contentTabs[i].id)
+                if (sender.tab.id === contentTabs[i])
                 {
                     browser.tabs.executeScript(
                         sender.tab.id,
@@ -54,15 +59,15 @@ function handleMessages(request, sender, sendResponse)
 
 function storeData(data, tabID)
 {
-    /* Close content tab */
-    browser.storage.local.get("SO_Content_Tabs").then((result) => {
-        if (result.SO_Content_Tabs[tabID].id !== browser.tabs.TAB_ID_NONE)
+    /* Flush previous day's data */
+    browser.storage.local.get('currentDate').then(res => {
+        let date = new Date()
+        if (res.currentDate !== date.toDateString())
         {
-            browser.tabs.remove(result.SO_Content_Tabs[tabID].id)
-            result.SO_Content_Tabs[tabID] = browser.tabs.TAB_ID_NONE
-            browser.storage.local.set({ SO_Content_Tabs: result.SO_Content_Tabs })
+            browser.storage.local.set({ carts: {} })
         }
     })
+
 
     /* Store content data */
     browser.storage.local.get("SO_Content_Data_Seperate").then(result => {
@@ -151,12 +156,19 @@ function LoadContentWindow()
             }
         )
         
-        browser.storage.local.set({ SO_Content_Tabs: windowInfo.tabs })
+        browser.storage.local.set({ SO_Content_Tabs: windowInfo.tabs.map(tab => tab.id) })
     })
 }
 
 function handleBrowserActionClick() {
-    LoadContentWindow()
+    browser.storage.local.get('currentDate').then(res => {
+        if (res.currentDay === undefined) 
+        {
+            let date = new Date()
+            browser.storage.local.set({ currentDate: date.toDateString() })
+        }
+    })
+
 
     /* Create or focus sally dashboard tab */
     browser.storage.local.get('SO_UI').then(res => {
@@ -168,19 +180,46 @@ function handleBrowserActionClick() {
         }
         else
         {
-            browser.storage.local.get("SO_UI").then((res2) => {
-                browser.tabs.update(res2.SO_UI, { active: true })
+            browser.tabs.update(res.SO_UI, { active: true })
+        }
+    })
+    
+    browser.storage.local.get('SO_Content_Tabs').then(res => {
+        /* No tabs exist */
+        if (res.SO_Content_Tabs[0] === browser.tabs.TAB_ID_NONE &&
+            res.SO_Content_Tabs[1] === browser.tabs.TAB_ID_NONE) 
+        {
+            LoadContentWindow()
+        }
+        /* Both tabs exist */
+        else if (res.SO_Content_Tabs[0] !== browser.tabs.TAB_ID_NONE &&
+            res.SO_Content_Tabs[1] !== browser.tabs.TAB_ID_NONE)
+        {
+            // do nothing
+        }
+        /* One tabs exists */
+        else 
+        {
+            res.SO_Content_Tabs.forEach(tab => {
+                if (tab !== browser.tabs.TAB_ID_NONE)
+                {
+                    browser.tabs.remove(tab)
+                }
             })
+
+            LoadContentWindow()
         }
     })
 }
 
+/* Listeners */
 browser.tabs.onRemoved.addListener(handleRemoved)
 browser.runtime.onMessage.addListener(handleMessages)
-
 browser.browserAction.onClicked.addListener(handleBrowserActionClick)
 
+/* Storage API */
 browser.storage.local.set({ SO_UI: browser.tabs.TAB_ID_NONE })
 browser.storage.local.set({ SO_Content_Data_Seperate: [{}, {}] })
-browser.storage.local.set({ SO_Content_Tabs: [] })
+browser.storage.local.set({ SO_Content_Tabs: [browser.tabs.TAB_ID_NONE, browser.tabs.TAB_ID_NONE] })
 browser.storage.local.set({ carts: {} })
+browser.storage.local.set({ currentDate: undefined })
