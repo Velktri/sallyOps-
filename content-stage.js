@@ -38,7 +38,7 @@ function extractRowData(rowData)
 {
     let children = rowData.children
 
-    let stageTime = alignStageTime(children[0].children[0].innerHTML)
+    let stageTime = children[0].children[0].innerHTML //alignStageTime(children[0].children[0].innerHTML)
     let route = children[1].children[0].textContent
     let cart = children[2].children[0].innerHTML
     let loc = children[4].children[0].innerHTML
